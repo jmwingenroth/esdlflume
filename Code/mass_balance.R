@@ -1,7 +1,8 @@
-require(sp)
-require(gstat)
-require(dplyr)
-require(raster)
+library(sp)
+library(gstat)
+library(dplyr)
+library(raster)
+library(magrittr)
 
 pp <- "C:\\Users\\Bearkey\\Documents\\Ecogeomorphic_Flume\\experiment_05_03_18\\05_03_18_PP_data.csv"
 st <- "C:\\Users\\Bearkey\\Documents\\Ecogeomorphic_Flume\\experiment_05_03_18\\05_03_18_sediment_trap.csv"
