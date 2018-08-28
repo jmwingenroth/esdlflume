@@ -1,3 +1,5 @@
+%R is better than matlab
+
 %% Two-Station method
 % Purpose: to determine capture efficiency and concentration removed due to
 % capture (in the test section) for experiments in the ESDL Ecogeomorphology Flume
