@@ -1,0 +1,31 @@
+metadata,,,,,,,,
+,,,,,,,,
+consult final document (SPUR 2018) or author (ask Laurel who this was?) if clarification of dates or values is needed,,,,,,,,
+,,,,,,,,
+variables:,,,,,,,,
+Experiment ID: 1=Nitrogen and Phosphorous experiments; 2=fish food experiments,,,,,,,,
+,,,,,,,,
+Experiment ID,SAMPLE ID,Sample Description,Filter Mass (g),Oven-Dry Weight (g),Dry Mass of Biofilm Scraping (g),Oven Dry Weight 5/29/18,Weight after combustion,Biofilm mass
+1,1A,5:1 (N:P) with flow,0.13324,0.15714,0.0239,0.19277,0.18082,0.01195
+1,1B,5:1 (N:P) with flow,0.13095,0.14858,0.01763,0.17929,0.17024,0.00905
+1,2A,^ N with flow,0.13048,0.14848,0.018,0.18857,0.17938,0.00919
+1,2B,^ N with flow,0.13439,0.15415,0.01976,0.18965,0.17856,0.01109
+1,3A,^ P with flow,0.12908,0.14083,0.01175,0.16791,0.15985,0.00806
+1,3B,^ P with flow,0.13675,0.14778,0.01103,0.17497,0.16741,0.00756
+1,4A,5:1 (N:P) no flow,0.13077,0.13127,0.0005,0.16869,0.16593,0.00276
+1,4B,5:1 (N:P) no flow,0.13388,0.13397,9.00000000000067E-05,0.17083,0.16875,0.00208
+1,5A,control (no flow),0.13309,0.13315,6.00000000000045E-05,0.166,0.16351,0.00249
+1,5B,control (no flow),0.1315,0.13149,-9.99999999998225E-06,0.16736,0.16516,0.0022
+1,ambient filter 1,,0.13185,,,,,
+1,ambient filter 2,,0.13261,,,,,
+1,ambient filter 3,,0.13443,,,,,
+2,1A,Control 5:1 (N:P)+flow,0.22597,0.23126,0.00529,,,
+2,1B,Control 5:1 (N:P)+flow,0.2413,0.24596,0.00466,,,
+2,2A,0.1 g fish food +flow,0.22981,0.2331,0.00329,,,
+2,2B,0.1 g fish food +flow,0.23726,0.24331,0.00605,,,
+2,3A,1.0 g fish food + flow,0.22545,0.23043,0.00498,,,
+2,3B,1.0 g fish food + flow,0.22465,0.23218,0.00753,,,
+2,4A,5.0 g fish food + flow,0.22323,0.2361,0.01287,,,
+2,4B,5.0 g fish food + flow,0.23314,0.25836,0.02522,,,
+2,5A,10.0 g fish food + flow,0.23,0.24496,0.01496,,,
+2,5B,10.0 g fish food + flow,0.22744,0.24121,0.01377,,,

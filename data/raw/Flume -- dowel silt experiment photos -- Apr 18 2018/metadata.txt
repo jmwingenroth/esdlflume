@@ -1,0 +1,10 @@
+﻿Dowels from the flume run on 4/19/18 were removed from the flume on 4/25 and 4/26, allowed to air dry, and photographed (using Morgan’s microscope, in the lab) the same day.  
+
+Filename convention: 		**cm_***_**.jpg
+    • Where		
+        ◦ **cm is dowel position, distance downstream from the upstream edge of the test section
+        ◦ _***_  is horizontal position, where “center” is equidistant between the two side walls; “left” is 5cm from the outer wall (measured from the interior face, left when facing downstream); right is 5cm from inner wall
+        ◦ _**.jpg refers to dowel orientation on the microscope (and possible duplicates of a single orientation, lettered a-z sequentially), where “1” and “2” are 180 degrees apart, relative to each other.
+
+Photographs were taken with iPhone 6 and Android devices through the eyepiece of the microscope.  The metric side of a ruler was used for scale; tick marks in the photographs represent 1mm.  Dowels were photographed at roughly the same vertical height of ~20cm above the flume bed level, where they balanced (with small sphere of putty attaching a single 8-32 hex nut on one end)
+

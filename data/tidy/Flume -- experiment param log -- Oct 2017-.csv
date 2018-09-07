@@ -1,0 +1,22 @@
+Metadata,,,,,,
+commas replaced with semicolons for .csv compatibility,,,,,,
+Date,frequency (Hz),sediment,water depth (cm),transmission,deviation bin,Notes
+10/9/2017,10,Aquatic Park,45,1,18,strong oscillation pattern from bins 1-17; then pattern increasingly degrades from 18-32
+10/11/2017,30,Aquatic Park,45,0,NA,variable (but visible) trend from bins 1-6; then flatlines for remainder (small number of points to left that degrade quickly)
+10/18/2017,30,Aquatic Park; floc,45,1,3,strongly increasing trend that peaks at bin 3 then slowly declines to a flatline at bin 26 then upticks at 31 and 32; bins 1 and 2 seem to have very high frequency oscillations
+10/20/2017,10,Aquatic Park; floc,45,1,NA,strongly increasing trend in bins 1-3; then flatlines until bin 14; then develops a decreasing trend until 26 then flatlines
+11/1/2017,flume off,Aquatic Park; floc,45,1,NA,somewhat increasing trend in bins 1-17; then somewhat decreasing trend in remainder of bins; very noisy overall
+11/15/2017,30,none,45,1,NA,run 1; decreasing trend in most of the bins
+11/15/2017,30,floc,47.54,1,NA,"run 2; exponental decay in most bins with small increase in concentration in intermediate bins (flocculation?); makes the most ""sense"""
+11/20/2017,10,floc,47.54,1,2,bin 1 exhibits oscillations; bin 2 less so but both are increasing; the rest of the bins are flatlines
+2/16/2018,30,floc,40,1,3,high frequency oscillations in bins 1-3; flatline; then increasing trend from 26-32
+2/15/2018,30,floc,40,1,NA,all bins have discontinuous patches; bins 1-18 have increasing trends but 19-32 have decreasing trends
+2/20/2018,30,floc,40,1,NA,constant trend in bin 1; flatline for remainder of bins
+2/22/2018,30,floc,40,1,3,run 1; bins 1 and 2 show oscillation; not apparent in 3; then flatlines for most of the rest of the bins
+2/22/2018,30,floc,40,1,4,run 2; all bins flatline except for bins 1; 2; 3; 28-32; lower frequency oscillation in 2 and 3
+2/23/2018,30,floc,40,1,NA,increasing trend in bin 1; all else flatlines
+5/11/2018,30,walnut flour -100,40,,,
+5/24/2018,30,walnut flour -100,40,,,
+6/4/2018,30,walnut flour -100,40,1,24,Exponential decay for bins 1-23; most of the rest show some increasing concentration
+6/11/2018,30,walnut flour -100,40,,,
+6/27/2018,30,walnut flour -100,40,,,
