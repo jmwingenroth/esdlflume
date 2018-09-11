@@ -1,22 +1,28 @@
-Metadata,,,,,,
-commas replaced with semicolons for .csv compatibility,,,,,,
-Date,frequency (Hz),sediment,water depth (cm),transmission,deviation bin,Notes
-10/9/2017,10,Aquatic Park,45,1,18,strong oscillation pattern from bins 1-17; then pattern increasingly degrades from 18-32
-10/11/2017,30,Aquatic Park,45,0,NA,variable (but visible) trend from bins 1-6; then flatlines for remainder (small number of points to left that degrade quickly)
-10/18/2017,30,Aquatic Park; floc,45,1,3,strongly increasing trend that peaks at bin 3 then slowly declines to a flatline at bin 26 then upticks at 31 and 32; bins 1 and 2 seem to have very high frequency oscillations
-10/20/2017,10,Aquatic Park; floc,45,1,NA,strongly increasing trend in bins 1-3; then flatlines until bin 14; then develops a decreasing trend until 26 then flatlines
-11/1/2017,flume off,Aquatic Park; floc,45,1,NA,somewhat increasing trend in bins 1-17; then somewhat decreasing trend in remainder of bins; very noisy overall
-11/15/2017,30,none,45,1,NA,run 1; decreasing trend in most of the bins
-11/15/2017,30,floc,47.54,1,NA,"run 2; exponental decay in most bins with small increase in concentration in intermediate bins (flocculation?); makes the most ""sense"""
-11/20/2017,10,floc,47.54,1,2,bin 1 exhibits oscillations; bin 2 less so but both are increasing; the rest of the bins are flatlines
-2/16/2018,30,floc,40,1,3,high frequency oscillations in bins 1-3; flatline; then increasing trend from 26-32
-2/15/2018,30,floc,40,1,NA,all bins have discontinuous patches; bins 1-18 have increasing trends but 19-32 have decreasing trends
-2/20/2018,30,floc,40,1,NA,constant trend in bin 1; flatline for remainder of bins
-2/22/2018,30,floc,40,1,3,run 1; bins 1 and 2 show oscillation; not apparent in 3; then flatlines for most of the rest of the bins
-2/22/2018,30,floc,40,1,4,run 2; all bins flatline except for bins 1; 2; 3; 28-32; lower frequency oscillation in 2 and 3
-2/23/2018,30,floc,40,1,NA,increasing trend in bin 1; all else flatlines
-5/11/2018,30,walnut flour -100,40,,,
-5/24/2018,30,walnut flour -100,40,,,
-6/4/2018,30,walnut flour -100,40,1,24,Exponential decay for bins 1-23; most of the rest show some increasing concentration
-6/11/2018,30,walnut flour -100,40,,,
-6/27/2018,30,walnut flour -100,40,,,
+Date,start collection,end collection,flume on,frequency (Hz),sediment,sediment added,sediment mass (g),collector density (1/m^2),discharge (US gal/min),depth (cm),slope (%),LISST position,average flow velocity (cm/s),Vectrino position,LISST background scattering value,LISST setup notes,Notes
+10/9/17,11:45,14:45,NA,10,Aquatic Park,NA,NA,0,67,45,0,NA,no vectrino,n/a,,,
+10/11/17,10:30,13:30,10:35,30,Aquatic Park,NA,NA,0,215,45,0.04,NA,no vectrino,n/a,,,flow stabilized at 30 Hz at 10:39
+10/18/17,12:00,15:00,12:04,30,Aquatic Park; floc,12:04,,0,215,45,0,mid-test,no vectrino,n/a,,,floc added close to bed downstream of test section
+10/20/17,11:37,14:37,11:42,10,Aquatic Park; floc,start,,0,67,45,0,NA,no vectrino,n/a,,,water was turbid before experiment
+11/1/17,12:05,14:05,not turned on,0,Aquatic Park; floc,start,,0,0,45,0,NA,no vectrino,n/a,,,floc: 155.5 g kaolinite and 31.1 g NaCl
+11/15/17,11:45,12:45,11:55,30,none,not added,,0,215,45,0,downstream of test,no vectrino,n/a,,,ambient conditions (no sediment)
+11/15/17,13:00,16:00,start,30,floc,13:02,,0,215,45,0,downstream of test,no vectrino,n/a,,,finished adding floc at 13:13
+11/20/17,10:35,13:35,10:45,10,floc,start,,0,67,45,0.01,downstream of test,no vectrino,n/a,,,30 Hz run on 11/15/17
+2/15/18,14:15,16:15,start,30,floc,14:25,,183,215,40,0,downstream of test,,Multiple; See Note,,,floc: 155.5 g kaolinite and 15.5 kg NaCl.  NaCl mixed in small batches and added to flume to circulate.  Kaolinite added later; 10 minutes after data collection began.
+2/16/18,14:30,16:15,14:35,30,floc from 2/15 (settled),from 2/15 experiment,,183,215,38,0,downstream of test,,Multiple; See Note,,,
+2/20/18,15:10,16:00,14:40,30,floc from 2/15 (settled),from 2/15 experiment,,183,215,37,0,downstream of test,,Multiple; See Note,,,
+2/22/18,12:30,13:30,12:33,30,floc from 2/15 (settled),from 2/15 experiment,,183,215,40,0,downstream of test,,Multiple; See Note,,,
+2/23/18,13:50,16:20,13:50,30,floc from 2/15 (settled),from 2/15 experiment,,183,215,40,0,downstream of test,,Multiple; See Note,,,
+4/10/18,,,n/a,n/a,silt,,,n/a,n/a,n/a,n/a,centered; vertically oriented in bucket,no vectrino,n/a,,,
+4/12/18,,,n/a,n/a,silt,,3.9,n/a,n/a,n/a,n/a,centered; vertically oriented in bucket,no vectrino,n/a,,,Added ~ 3.9 grams to ~3 gal of water.  Circulated with a propellor pump (the ones used in the biofilm growth experiments)
+4/19/18,11:22,13:22,11:31,30,silt,in two pulses at ~11:40am and ~11:45am,751.27,183,215,40,0,downstream of test,,1 m upstream of test section; centered; positive x pointing downstream; 20 cm from bed,,,751.27g silt added in two pulses at ~11:40am and ~11:45am.  Peristaltic pump tubes all have flow rate of 50 ml/min (except maybe for 27U)
+5/3/18,13:45,,14:00,30,walnut shell flour (325 grade),14:12,80.8,183,215,40,0,downstream of test,,1 m upstream of test section; centered; positive x pointing downstream; 20 cm from bed,,,80.8g walnut -325 mixed with ~3 gallons of water; added in single pulse just downstream of the LISST.  Noted that pump 27U has slower flow rate.  All others have flow rate of 50 ml/min
+5/11/18,10:54,,10:58,30,walnut shell flour (100 grade),,98.68,183,215,40,0,downstream of test,,1 m upstream of test section; centered; positive x pointing downstream; 20 cm from bed,,,"98.68 g Walnut shell -100 mixed with 3 gallons of water in a 5 gallon bucket; added in 1 pulse (~30 seconds).  
+Mass based on bucket test conducted earlier in the morning; where 0.37g walnut shell added to ~3 gallons of water yielded a transmission value of ~0.6
+27U tubing replaced and all tubes checked for proper flow rate of 50mL/min"
+5/24/18,12:55,16:30,12:57 PM,30,walnut shell flour (100 grade),5 minutes after series 2 pump samples were collected,98.68,0,215,40,0,downstream of test,,1 m upstream of test section; centered; positive x pointing downstream; 20 cm from bed,,,"98.68 g Walnut shell -100 mixed with 3 gallons of water in a 5 gallon bucket; then added steadily over the course of ~ 3 minutes just downstream of the LISST.  
+Flume not cleaned between 5/11 and 5/24 experiments.  
+Vectrino stopped collecting data after ~2.5 hrs due to computer sleep; changed Toughbook settings so that system now only sleeps after 4 hours.  
+All pump tubes checked for flow rate of 50ml/min"
+6/4/18,13:53,5:53 PM,1:48 PM,30,walnut shell flour (100 grade; labeled with DTAF),3 gallons added via 5-gallon container with nozzle over the course of 3 minutes,100g,0,215,40,0,downstream of test,,1 m upstream of test section; centered; positive x pointing downstream; 20 cm from bed,,,27u has flow closer to 40mL/min; 4 hrs of data collection.  Added sediment via 5-gallon container with nozzle; discharge of ~1gal/min and filled to 3 gal.
+6/11/18,13:48,17:48,2:15 PM,30,walnut shell flour (100 grade; labeled with DTAF),at 2:30pm; 3 gallons added via 5-gallon container with nozzle over the course of 3 minutes,100g,183,215,40,0,downstream of test,,1 m upstream of test section; centered; positive x pointing downstream; 20 cm from bed,,,Vectrino unable to connect and software crashed multiple times so no vectrino data was collected.  (Note: The following day 6/12; attempted to collect vectrino data as a diagnostic test and it worked just fine.)  Sediment added via same method as 6/4 (via nozzle) but it finished draining before the sediment had circulated through the flume and back to the point of sediment addition.  In time; there was a ~ 30 second gap until the sediment reached the point of addition.  Use ~4 gallons in the future.  27U pumping more slowly (roughly 40ml/min but steady).
+6/27/18,13:30,17:30,1:37 PM,30,walnut shell flour (100 grade; labeled with DTAF),at 2:00-2:03pm; 3 gallons added via 5-gallon container with nozzle over the course of 3 minutes,100g,1830,215,40,0,downstream of test,,1 m upstream of test section; centered; positive x pointing downstream; 20 cm from bed,13.1,Water poured same day at 9:30am and LISST placed in bucket with water.  Background scattering value was collected at 11:50am.,Vectrino software connected and started collecting data initially but crashed within half an hour (twice).  Sediment trap C removed at end of data collection period; but the rest were stoppered in place and removed the following day.  All dowels within a ~2 inch radius of the sediment traps had to be removed to access the traps.
