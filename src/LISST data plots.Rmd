@@ -60,7 +60,7 @@ gathered_measurements <- time_converted_final %>%
   gather(key=bin, value=measurement, 1:32) #combining particle concentration data into a single field
 ```
 
-##Optional tidying
+##Tidying into model data
 ```{r}
 #put bins in correct order and group by bin
 model_data <- gathered_measurements %>%
@@ -73,9 +73,22 @@ model_data <- gathered_measurements %>%
 model_data <- model_data %>%
   mutate(rollmean_1000 = roll_mean(measurement, 1000, fill = NA))
 
-#filter to just exponential decay data
+#filter out data from before sediment was added
 model_data <- model_data %>%
   filter(sec>500)
+
+#getting rid of raw and semi-processed data
+rm(list = c("gathered_measurements",
+          "raw",
+          "time_converted_final",
+          "time_converted_sec",
+          "correction",
+          "diff",
+          "laser_reference",
+          "seconds",
+          "time_interval",
+          "transmission"))
+
 ```
 
 ##Rolling mean plots
@@ -90,7 +103,7 @@ model_data %>%
   geom_line()
 ```
 
-##Exponential models
+##Simple exponential models from unedited data
 ```{r}
 decay_models <- model_data %>%
   filter(measurement > 0) %>% #cleanup for log regression
@@ -115,27 +128,67 @@ decay_models %>%
 
 decay_coef %>%
   rename(k_total = sec)
-  
 ```
 
 ```{r}
-
 model_data %>%
   ungroup() %>%
   group_by(sec) %>%
-  summarise(sum = sum(measurement)) %>%
-  filter(sum < 45) -> unweighted_sum
+  summarise(sum = sum(measurement)) -> total_vol
 
-unweighted_sum %>%
-  lm(log(sum) ~ sec, data = .) -> uws_model
+total_vol %>%
+  lm(log(sum) ~ sec, data = .) -> sum_model
 
-glance(uws_model)
+glance(sum_model)
 
-unweighted_sum %>%
-  mutate(pred = exp(tidy(uws_model)$estimate[1]+sec*tidy(uws_model)$estimate[2])) %>%
+total_vol %>%
+  mutate(pred = exp(tidy(sum_model)$estimate[1]+sec*tidy(sum_model)$estimate[2])) %>%
   ggplot(aes(sec)) +
   geom_point(aes(y = sum), alpha = .1) +
   geom_line(aes(y = pred), col = "red")
+```
+
+##Exponential models for data excluding beginning fluctuations and outliers
+```{r}
+
+increment <- 50
+start <- 1000
+n <- 20
+
+all_models <- total_vol %>% #get rid of clumps of outliers in upper right
+  filter(sec < 2000 | sum < 40)
+
+models <- as.tibble(1:n) %>%
+  add_column(start = 0, c = 0, k = 0, r_sq = 0)
+
+preds <- matrix(0,nrow(all_models),n)
+
+for (i in 1:n) {
+  subset <- filter(all_models, sec > i*increment+start-increment)
+  temp <- lm(log(sum) ~ sec, data = subset)
+  
+  models$start[i] <- i*increment+start-increment
+  models$c[i] <- tidy(temp)$estimate[1]
+  models$k[i] <- tidy(temp)$estimate[2]
+  models$r_sq[i] <- glance(temp)$r.squared[1]
+  
+  for (j in 1:nrow(all_models)) {
+    preds[j,i] <- exp(models$c[i]+models$k[i]*all_models$sec[j])
+  }
+}
+
+models
+
+all_models <- cbind(all_models, preds)
+
+colnames(all_models)[3:(nrow(models)+2)]<-paste0("V",seq(start,start+(n-1)*increment,increment))
+
+all_models %>%
+  filter(sec > 1650) %>%
+  ggplot(aes(sec)) +
+  geom_point(aes(y = log(sum)), alpha = .2) +
+  geom_line(aes(y = log(V1650)), col = "purple") +
+  geom_line(aes(y = log(V1850)), col = "green")
 
 ```
 
