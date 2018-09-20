@@ -1,6 +1,8 @@
 ---
 title: "LISST exponential model"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 Note: The 'raw data cleanup' code was partially copypasted from Justin's original data cleaning script, LISST_processing.R
@@ -19,7 +21,7 @@ require(tidyverse)
 #Laser reference >>0
 #Transmission should be between 0 and 1 (low transmission indicates turbid water, high tranmission indicates clear water; should disregard these data)
 
-file <- "../data/raw/Flume -- LISST -- Sept 2018-/Flume - size dist data -- 09-12-18.asc"
+file <- "../data/raw/Flume -- LISST -- Sept 2018-/20180920/L2631123.asc"
 correction <- TRUE #set this to TRUE if you want to remove all data points that have a transmission outside of the optimal range of 0.1 to 0.995
 time_interval <- 1
 
