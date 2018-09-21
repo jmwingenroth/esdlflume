@@ -1,0 +1,45 @@
+---
+title: "vectrino"
+output: html_document
+---
+
+#libraries
+```{r libs}
+library(tidyverse)
+```
+
+
+sadly the vectrino data files are too big to fit on github. I'll therefore be bad (unreproducible) and use setwd() as a temporary workaround
+
+#load in the big vectrino file
+```{r load in the big vectrino file}
+setwd("C:/Users/!j.wingenroth")
+raw<-readLines("downloads/experiment_20180920.263.18.Vectrino Profiler.00000.dat")
+```
+
+#extract x lines
+```{r extract values}
+x_vals<-as_tibble(grep("^Profiles_Velocity_X", raw, value = TRUE))
+```
+
+#get tidy data from x lines
+```{r}
+x1 <- x_vals$value %>%
+  str_match("\\[\\s-*\\d\\.\\d+") %>%
+  str_sub(3)
+
+#x2 and x3 should be accessible with regex formulas too, but I'm out of time for now
+```
+
+time data should be incorporated also! However, as I'm short on time:
+
+```{r}
+
+x1 %>%
+  as.numeric() %>%
+  mean(na.rm = TRUE)
+
+plot(x1[20000:length(x1)], col = alpha("black", 0.1))
+
+```
+
