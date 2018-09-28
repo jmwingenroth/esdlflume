@@ -1,0 +1,69 @@
+---
+title: "920pumpdata"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+libs
+```{r include=FALSE}
+
+library(tidyverse)
+
+```
+
+
+load data
+```{r include=FALSE}
+
+data <- read_csv("../data/raw/920pumpdata.csv")
+data
+
+```
+
+tidy data
+```{r}
+
+tidy <- data %>%
+  filter(!is.na(`mass volume concentration (ppm)`), X1>1) %>%
+  rename(mvc = `mass volume concentration (ppm)`,
+         seq = X1,
+         loc = Location,
+         ht = Height) %>%
+  mutate(t = 5*seq, ht_loc = paste0(ht, loc)) %>% #bottles were collected every five minutes)
+  select(t, everything()) 
+tidy
+```
+
+
+multiple regression
+```{r}
+
+model <- lm(log(mvc) ~ t + loc + ht, data = tidy)
+summary(model)
+
+```
+for the sep 20 data, this demonstrates that time is the only significant factor, hence we simplify:
+
+time-only regression
+```{r}
+
+model <- lm(log(mvc) ~ t, data = tidy)
+summary(model)
+
+```
+
+
+plot data
+```{r}
+
+tidy %>%
+  ggplot(aes(t,mvc, color = ht_loc)) +
+  geom_line() +
+  stat_function(fun =function(t) exp(2.9426853 - .0076886*t))
+
+```
+
