@@ -1,7 +1,9 @@
 ---
-title: "920pumpdata"
+title: "pumpdata"
 output: html_document
 ---
+
+### run date: 9/20
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
@@ -12,6 +14,7 @@ libs
 ```{r include=FALSE}
 
 library(tidyverse)
+require(broom)
 
 ```
 
@@ -20,6 +23,7 @@ load data
 ```{r include=FALSE}
 
 data <- read_csv("../data/raw/920pumpdata.csv")
+
 data
 
 ```
@@ -28,12 +32,12 @@ tidy data
 ```{r}
 
 tidy <- data %>%
-  filter(!is.na(`mass volume concentration (ppm)`), X1>1) %>%
+  filter(!is.na(`mass volume concentration (ppm)`), `time series`>1, `mass volume concentration (ppm)`>0) %>%
   rename(mvc = `mass volume concentration (ppm)`,
-         seq = X1,
+         seq = `time series`,
          loc = Location,
          ht = Height) %>%
-  mutate(t = 5*seq, ht_loc = paste0(ht, loc)) %>% #bottles were collected every five minutes)
+  mutate(t = 300*seq, ht_loc = paste0(ht, loc), mvc = as.numeric(mvc)) %>% #bottles were collected every five minutes)
   select(t, everything()) 
 tidy
 ```
@@ -42,13 +46,13 @@ tidy
 multiple regression
 ```{r}
 
-model <- lm(log(mvc) ~ t + loc + ht, data = tidy)
+model <- lm(mvc ~ log(t) + loc + ht, data = tidy)
 summary(model)
 
 ```
 for the sep 20 data, this demonstrates that time is the only significant factor, hence we simplify:
 
-time-only regression
+time-only exponential regression
 ```{r}
 
 model <- lm(log(mvc) ~ t, data = tidy)
@@ -56,14 +60,25 @@ summary(model)
 
 ```
 
+I accidentally found that a power-law model has a better fit:
+```{r}
+powerlaw <- lm(log(mvc)~log(t), data = tidy)
+summary(powerlaw)
+```
+
+
 
 plot data
+
 ```{r}
 
 tidy %>%
-  ggplot(aes(t,mvc, color = ht_loc)) +
-  geom_line() +
-  stat_function(fun =function(t) exp(2.9426853 - .0076886*t))
-
+  ggplot(aes(t,mvc)) +
+  geom_point() +
+  stat_function(fun = function (t) exp(tidy(model)$estimate[1] + tidy(model)$estimate[2]*t), color = "blue") +
+  stat_function(fun = function (t) exp(tidy(powerlaw)$estimate[1] + tidy(powerlaw)$estimate[2]*log(t)), color = "red") +
+  ylab("total sediment concentration (ppm)") +
+  xlab("time (seconds)")
+  
 ```
 
