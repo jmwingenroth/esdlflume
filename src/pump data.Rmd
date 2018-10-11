@@ -22,7 +22,7 @@ require(broom)
 load data
 ```{r include=FALSE}
 
-data <- read_csv("../data/raw/920pumpdata.csv")
+data <- read_csv("../data/raw/928pumpdata.csv")
 
 data
 
@@ -32,12 +32,12 @@ tidy data
 ```{r}
 
 tidy <- data %>%
-  filter(!is.na(`mass volume concentration (ppm)`), `time series`>1, `mass volume concentration (ppm)`>0) %>%
+  filter(!is.na(`mass volume concentration (ppm)`), `time series 5*(n-1)`>1, `mass volume concentration (ppm)`>0) %>%
   rename(mvc = `mass volume concentration (ppm)`,
-         seq = `time series`,
+         seq = `time series 5*(n-1)`,
          loc = Location,
          ht = Height) %>%
-  mutate(t = 300*seq, ht_loc = paste0(ht, loc), mvc = as.numeric(mvc)) %>% #bottles were collected every five minutes)
+  mutate(t = 300*(seq-1), ht_loc = paste0(ht, loc), mvc = as.numeric(mvc)) %>% #bottles were collected every five minutes)
   select(t, everything()) 
 tidy
 ```
@@ -76,7 +76,7 @@ tidy %>%
   ggplot(aes(t,mvc)) +
   geom_point() +
   stat_function(fun = function (t) exp(tidy(model)$estimate[1] + tidy(model)$estimate[2]*t), color = "blue") +
-  stat_function(fun = function (t) exp(tidy(powerlaw)$estimate[1] + tidy(powerlaw)$estimate[2]*log(t)), color = "red") +
+  #stat_function(fun = function (t) exp(tidy(powerlaw)$estimate[1] + tidy(powerlaw)$estimate[2]*log(t)), color = "red") +
   ylab("total sediment concentration (ppm)") +
   xlab("time (seconds)")
   
