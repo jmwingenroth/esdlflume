@@ -324,7 +324,9 @@ $(document).ready(function () {
 </div>
 <div id="data" class="section level1">
 <h1>data</h1>
-<p>t is time in minutes. t1, t2, t3 are drainage times for 1 L in seconds.</p>
+<p>t is time in minutes.</p>
+<p>t1, t2, t3 are drainage times for 1 L in seconds.</p>
+<p><strong>Note: water depth was 38 cm</strong></p>
 <pre class="r"><code>data &lt;- tibble(t = c(2, 107, 244, 330),
           t1 = c(7.85, 8.03, 9.22, 11.65),
           t2 = c(7.52, 8.03, 8.91, 11.33),
@@ -366,9 +368,10 @@ summary(model)</code></pre>
 </div>
 <div id="volume-estimate-integral" class="section level1">
 <h1>volume estimate (integral)</h1>
-<p>The integral function is of the form x cubed plus x. The definite integral from zero is therefore equal to the value of the function at the flow endpoint (336 minutes)</p>
-<pre class="r"><code>cat(model$coefficients[1]*336 + model$coefficients[2]*336^3, &quot;liters&quot;)</code></pre>
-<pre><code>## 1768.023 liters</code></pre>
+<pre class="r"><code>integrate(function(x) model$coefficients[1] + model$coefficients[2]*x^2, 0, 336)
+cat(&quot;in liters&quot;)</code></pre>
+<pre><code>## 2334.858 with absolute error &lt; 2.6e-11
+## in liters</code></pre>
 </div>
 
 
