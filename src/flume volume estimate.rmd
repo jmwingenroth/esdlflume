@@ -1,0 +1,46 @@
+---
+title: "flume volume estimate"
+output: html_document
+---
+
+# libs
+```{r}
+library(tidyverse)
+```
+
+# data
+t is time in minutes.
+t1, t2, t3 are drainage times for 1 L in seconds.
+```{r}
+data <- tibble(t = c(2, 107, 244, 330),
+          t1 = c(7.85, 8.03, 9.22, 11.65),
+          t2 = c(7.52, 8.03, 8.91, 11.33),
+          t3 = c(7.77, 8.10, 8.94, 11.28)) %>%
+  gather(,,-t) %>%
+  mutate(discharge = 60/value)
+```
+
+# model
+```{r}
+model <- lm(data = data, formula = discharge ~ I(t^2))
+summary(model)
+
+data$fitted <- exp(model$fitted.values)
+```
+
+# plot
+```{r}
+data %>%
+  ggplot(aes(t, discharge)) +
+  geom_point() +
+  stat_function(fun = function (x) model$coefficients[1]+model$coefficients[2]*x^2)
+```
+
+# volume estimate (integral)
+
+The integral function is of the form x cubed plus x. The definite integral from zero is therefore equal to the value of the function at the flow endpoint (336 minutes)
+
+```{r}
+cat(model$coefficients[1]*336 + model$coefficients[2]*336^3, "liters")
+```
+
