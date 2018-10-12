@@ -28,8 +28,6 @@ data <- tibble(t = c(2, 107, 244, 330),
 ```{r}
 model <- lm(data = data, formula = discharge ~ I(t^2))
 summary(model)
-
-data$fitted <- exp(model$fitted.values)
 ```
 
 # plot
