@@ -77,7 +77,7 @@ model_data <- model_data %>%
 
 #filter out data from before sediment was added
 model_data <- model_data %>%
-  filter(sec>900)
+  filter(sec>0)
 
 
 #getting rid of raw and semi-processed data
@@ -94,103 +94,24 @@ rm(list = c("gathered_measurements",
 
 ```
 
-##Rolling mean plots
-```{r}
-model_data %>%
-  ggplot(aes(sec,bin,fill=rollmean_1000)) +
-  geom_tile() +
-  scale_fill_distiller(palette = "Spectral")
-
-model_data %>%
-  ggplot(aes(sec,rollmean_1000,color = as.factor(bin))) +
-  geom_line()
-```
-
 ##Simple exponential models from unedited data
 ```{r}
-decay_models <- model_data %>%
-  filter(measurement > 0) %>% #cleanup for log regression
-  do(model = lm(log(measurement) ~ sec, data = .))
 
-decay_coef <- decay_models %>%
-  tidy(model) %>%
-  select(bin, term, estimate) %>%
-  spread(term, estimate) %>%
-  rename(int = '(Intercept)')
-
-model_data %>%
-  mutate(pred = exp(decay_coef$int[bin]+sec*decay_coef$sec[bin])) %>%
-  gather(type, value, -bin, -sec) %>%
-  filter(type!="rollmean_1000") %>%
-  ggplot(aes(sec, value, color = type)) +
-  geom_line() +
-  facet_wrap(~bin, scales = 'free')
-
-decay_models %>%
-  glance(model)
-
-decay_coef$sec
-```
-
-```{r}
-model_data %>%
-  ungroup() %>%
+tidy_data <- model_data %>%
+  filter(bin %in% c(3:15), sec>11000, sec<14000) %>%
   group_by(sec) %>%
-  summarise(sum = sum(measurement)) -> total_vol
+  summarise(measurement = sum(measurement)) %>%
+  filter()
 
-total_vol %>%
-  lm(log(sum) ~ sec, data = .) -> sum_model
+simplemodel <- lm(log(measurement) ~ sec, data = tidy_data)
 
-glance(sum_model)
+summary(simplemodel)
 
-total_vol %>%
-  mutate(pred = exp(tidy(sum_model)$estimate[1]+sec*tidy(sum_model)$estimate[2])) %>%
-  ggplot(aes(sec)) +
-  geom_point(aes(y = sum), alpha = .1) +
-  geom_line(aes(y = pred), col = "red")
-```
+coeff <- tidy(simplemodel)
 
-##Exponential models for data excluding beginning fluctuations and outliers
-```{r}
-
-increment <- 50
-start <- 1000
-n <- 20
-
-all_models <- total_vol %>% #get rid of clumps of outliers in upper right
-  filter(sec < 2000 | sum < 40)
-
-models <- as.tibble(1:n) %>%
-  add_column(start = 0, c = 0, k = 0, r_sq = 0)
-
-preds <- matrix(0,nrow(all_models),n)
-
-for (i in 1:n) {
-  subset <- filter(all_models, sec > i*increment+start-increment)
-  temp <- lm(log(sum) ~ sec, data = subset)
-  
-  models$start[i] <- i*increment+start-increment
-  models$c[i] <- tidy(temp)$estimate[1]
-  models$k[i] <- tidy(temp)$estimate[2]
-  models$r_sq[i] <- glance(temp)$r.squared[1]
-  
-  for (j in 1:nrow(all_models)) {
-    preds[j,i] <- exp(models$c[i]+models$k[i]*all_models$sec[j])
-  }
-}
-
-models
-
-all_models <- cbind(all_models, preds)
-
-colnames(all_models)[3:(nrow(models)+2)]<-paste0("V",seq(start,start+(n-1)*increment,increment))
-
-all_models %>%
-  filter(sec > 1650) %>%
-  ggplot(aes(sec)) +
-  geom_point(aes(y = sum), alpha = .2) +
-  geom_line(aes(y = V1650), col = "purple") +
-  geom_line(aes(y = V1850), col = "green")
+tidy_data %>%
+  ggplot(aes(sec, measurement)) +
+  geom_point(alpha = .3) +
+  stat_function(fun = function(x) exp(coeff$estimate[1]+coeff$estimate[2]*x), color = "red")
 
 ```
-
