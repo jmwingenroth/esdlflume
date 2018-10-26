@@ -21,6 +21,8 @@ library(broom)
 ```{r}
 pumpdata920 <- read_csv("../data/raw/920pumpdata.csv")
 pumpdata1005 <- read_csv("../data/raw/1005pumpdata.csv")
+pumpdata1019 <- read_csv("../data/raw/1019pumpdata.csv")
+
 ```
 
 # Tidy pump data
@@ -42,11 +44,16 @@ pumpdata920 <- pumpdata920 %>%
   mutate(time = time*300, run = "sep20") %>%
   select(run, 2:9)
 
-pump <- rbind(pumpdata1005, pumpdata920)
+pumpdata1019 <- pumpdata1019 %>%
+  filter(`time series`>1) %>%
+  rename(time = `Sample Time (s)`, mvc = `mass volume concentration (ppm)`) %>%
+  mutate(run = "oct 19") %>%
+  select(run, time, 3:9)
+
+pump <- rbind(pumpdata1005, pumpdata920, pumpdata1019)
 
 pump <- mutate(pump, mvc = as.numeric(mvc))
 
-rm(pumpdata920, pumpdata1005)
 ```
 
 # Import vectrino data
@@ -131,13 +138,73 @@ summary(model1005)
 model920 <- lm(log(mvc) ~ time, data = filter(pump, run=="sep20"))
 summary(model920)
 
+model1019 <- lm(log(mvc) ~ time, data = filter(pump, run=="oct 19"))
+summary(model1019)
+
+model1019s <-lm(log(mvc) ~ time, data = filter(pump, run=="oct 19", time<6001))
+summary(model1019s)
+
+model1019l <-lm(log(mvc) ~ time, data = filter(pump, run=="oct 19", time>6001))
+summary(model1019l)
+
 pump %>%
+  filter(time<6001) %>%
   ggplot(aes(time, mvc, color = run, group = time)) +
-  geom_jitter(alpha = .6, ) +
-  scale_color_manual(values = c("red","blue")) +
-  stat_function(fun = function(x) exp(model920$coefficients[1]+model920$coefficients[2]*x), color = "blue") +
-  stat_function(fun = function(x) exp(model1005$coefficients[1]+model1005$coefficients[2]*x), color = "red") +
+  geom_jitter(alpha = .6) +
+  scale_color_manual(values = c("red","blue","green")) +
+  stat_function(fun = function(x) exp(model920$coefficients[1]+model920$coefficients[2]*x), color = "green") +
+  stat_function(fun = function(x) exp(model1005$coefficients[1]+model1005$coefficients[2]*x), color = "blue") +
+  stat_function(fun = function(x) exp(model1019s$coefficients[1]+model1019s$coefficients[2]*x), color = "red") +
   xlab("sec") +
   ylab("ppm")
+  
+pump %>%
+  filter(run=="oct 19") %>%
+  ggplot(aes(time, mvc)) +
+  geom_jitter() +
+  stat_function(fun = function(x) exp(model1019$coefficients[1]+model1019$coefficients[2]*x), color = "blue") +
+  stat_function(fun = function(x) exp(model1019s$coefficients[1]+model1019s$coefficients[2]*x), color = "red") +
+  stat_function(fun = function(x) exp(model1019l$coefficients[1]+model1019l$coefficients[2]*x), color = "green")
+  
+
+```
+
+```{r}
+
+subset_model <- function(start = 600, increment = 600, n = 8) {
+  
+  stattable <- tibble(start = 0,
+                        end = 0,
+                        sep20k = 0,
+                        sep20r2 = 0,
+                        oct05k = 0,
+                        oct05r2 = 0,
+                        oct19k = 0,
+                        oct19r2 = 0)
+    
+  for (i in 1:n) {
+  
+    temp <- pump %>%
+      filter(time>start, time<(start + increment*i))
+    
+    sep20 <- lm(log(mvc) ~ time, data = filter(temp, run == 'sep20'))
+    oct05 <- lm(log(mvc) ~ time, data = filter(temp, run == 'oct05'))
+    oct19 <- lm(log(mvc) ~ time, data = filter(temp, run == 'oct 19'))
+    
+    stattable[i, 1] <- start
+    stattable[i, 2] <- start + increment*i
+    stattable[i, 3] <- tidy(sep20)$estimate[2]
+    stattable[i, 4] <- glance(sep20)$r.squared
+    stattable[i, 5] <- tidy(oct05)$estimate[2]
+    stattable[i, 6] <- glance(oct05)$r.squared
+    stattable[i, 7] <- tidy(oct19)$estimate[2]
+    stattable[i, 8] <- glance(oct19)$r.squared
+  }
+  
+  return(stattable)
+}
+
+subset_model(500, 400, 14)
+
 ```
 

@@ -23,9 +23,12 @@ load data
 ```{r}
 data928 <- read_csv("../data/raw/928pumpdata.csv")
 data920 <- read_csv("../data/raw/920pumpdata.csv")
+#data1019 <- read_csv("../data/raw/1019pumpdata.csv")
 
 data928$rundate <- "sep 28"
 data920$rundate <- "sep 20"
+#data1019$rundate <- "oct 19"
+
 
 data920 <- data920 %>%
   select(-X10) %>%
