@@ -20,11 +20,9 @@ library(broom)
 #Laser reference >>0
 #Transmission should be between 0 and 1 (low transmission indicates turbid water, high tranmission indicates clear water; should disregard these data)
 
-<<<<<<< HEAD
-file <- "../data/raw/Flume -- LISST -- Sept 2018-/20180920/L2631123.asc"
-=======
+
 file <- "../data/raw/Flume -- LISST -- Sept 2018-/20180928/20180928_size_distn.asc"
->>>>>>> 2e18b1bdfd564d3e0d6874a67e6ee3ad67dd3f6f
+
 correction <- TRUE #set this to TRUE if you want to remove all data points that have a transmission outside of the optimal range of 0.1 to 0.995
 time_interval <- 1
 
@@ -80,7 +78,7 @@ model_data <- model_data %>%
 
 #filter out data from before sediment was added
 model_data <- model_data %>%
-  filter(sec>900)
+  filter(sec>0)
 
 
 #getting rid of raw and semi-processed data
