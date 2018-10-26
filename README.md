@@ -48,5 +48,5 @@ If date is a range, use month abbreviations (ex: Mar 9-Apr 3 1991)
 - Eliminate prior folders
 	- Tidy all data
 	- Update raw data to naming convention
-	- Update source code to new names of raw data
+	- Update source code to new names of raw data 
 - Look into automating workflow with a Makefile or by using .Rmd

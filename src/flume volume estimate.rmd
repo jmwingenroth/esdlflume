@@ -1,0 +1,47 @@
+---
+title: "flume volume estimate"
+output: html_document
+---
+
+# libs
+```{r}
+library(tidyverse)
+```
+
+# data
+t is time in minutes.
+
+t1, t2, t3 are drainage times for 1 L in seconds.
+
+**Note: water depth was 38 cm**
+
+```{r}
+data <- tibble(t = c(2, 107, 244, 330),
+          t1 = c(7.85, 8.03, 9.22, 11.65),
+          t2 = c(7.52, 8.03, 8.91, 11.33),
+          t3 = c(7.77, 8.10, 8.94, 11.28)) %>%
+  gather(,,-t) %>%
+  mutate(discharge = 60/value)
+```
+
+# model
+```{r}
+model <- lm(data = data, formula = discharge ~ I(t^2))
+summary(model)
+```
+
+# plot
+```{r}
+data %>%
+  ggplot(aes(t, discharge)) +
+  geom_point() +
+  stat_function(fun = function (x) model$coefficients[1]+model$coefficients[2]*x^2)
+```
+
+# volume estimate (integral)
+
+```{r results = 'hold'}
+integrate(function(x) model$coefficients[1] + model$coefficients[2]*x^2, 0, 336)
+cat("in liters")
+```
+

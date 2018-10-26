@@ -1,0 +1,83 @@
+---
+title: "pumpdata"
+output: html_document
+---
+
+### run date: 9/20
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+libs
+```{r include=FALSE}
+
+library(tidyverse)
+require(broom)
+
+```
+
+
+load data
+```{r}
+data928 <- read_csv("../data/raw/928pumpdata.csv")
+data920 <- read_csv("../data/raw/920pumpdata.csv")
+
+data928$rundate <- "sep 28"
+data920$rundate <- "sep 20"
+
+data920 <- data920 %>%
+  select(-X10) %>%
+  mutate(`time series` = `time series`+1) %>%
+  filter(`time series`>2)
+
+data928 <- data928 %>%
+  rename("time series" = `time series 5*(n-1)`)
+
+data <- rbind(data920, data928) %>%
+  select(rundate, everything())
+```
+
+tidy data
+```{r}
+
+tidy <- data %>%
+  filter(!is.na(`mass volume concentration (ppm)`), `time series`>1, `mass volume concentration (ppm)`>0) %>%
+  rename(mvc = `mass volume concentration (ppm)`,
+         seq = `time series`,
+         loc = Location,
+         ht = Height) %>%
+  mutate(t = 300*seq, ht_loc = paste0(ht, loc), mvc = as.numeric(mvc)) %>% #bottles were collected every five minutes)
+  select(rundate, t, everything()) 
+tidy
+```
+
+
+exponential regression
+```{r}
+
+model920 <- lm(log(mvc) ~ t , data = filter(tidy, rundate == "sep 20"))
+
+model928 <- lm(log(mvc) ~ t , data = filter(tidy, rundate == "sep 28"))
+
+```
+
+plot data
+
+```{r}
+
+tidy %>%
+  ggplot(aes(t,mvc, color = rundate)) +
+  geom_point() +
+  stat_function(fun = function (t) exp(tidy(model920)$estimate[1] + tidy(model920)$estimate[2]*t), color = "red") +
+  stat_function(fun = function (t) exp(tidy(model928)$estimate[1] + tidy(model928)$estimate[2]*t), color = "blue") +
+  ylab("total sediment concentration (ppm)") +
+  xlab("time (seconds)") +
+  scale_color_manual(values = c("red","blue"))
+
+summary(model920)
+summary(model928)
+  
+```
+
