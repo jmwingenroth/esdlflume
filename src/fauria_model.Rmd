@@ -204,7 +204,47 @@ subset_model <- function(start = 600, increment = 600, n = 8) {
   return(stattable)
 }
 
-subset_model(500, 400, 14)
+subset_model(200, 300, 20)
+
+```
+
+```{r}
+
+subset_modeloct19 <-function(start = 600, increment = 600, n = 8) {
+  
+  stattable <- tibble(start = 0,
+                        end = 0,
+                        oct19k = 0,
+                        oct19r2 = 0)
+    
+  for (i in 1:n) {
+  
+    temp <- pump %>%
+      filter(time>start, time<(start + increment*i))
+    
+    oct19 <- lm(log(mvc) ~ time, data = filter(temp, run == 'oct 19'))
+    
+    stattable[i, 1] <- start
+    stattable[i, 2] <- start + increment*i
+    stattable[i, 3] <- tidy(oct19)$estimate[2]
+    stattable[i, 4] <- glance(oct19)$r.squared
+  }
+  
+  return(stattable)
+}
+
+table <- subset_modeloct19(500, 300, 30)
+
+plot(y = table$oct19r2, x = table$end)
+
+plot(y = table$oct19k, x = table$oct19r2)
+
+table %>%
+  filter(oct19r2 > .75) %>%
+  ggplot(aes(oct19k, oct19r2, label = end)) +
+  geom_path() +
+  geom_point() +
+  geom_label() 
 
 ```
 
