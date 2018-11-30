@@ -1,0 +1,107 @@
+---
+title: "dowel comparison"
+output:
+  html_document: default
+  pdf_document: 
+    latex_engine: xelatex
+---
+
+# Libraries:
+
+```{r message=FALSE}
+
+library(tidyverse)
+
+```
+
+# Load data:
+
+```{r message=FALSE}
+
+dowels <- read_csv("../data/raw/1115pumpdata.csv")
+
+nodowels <- read_csv("../data/raw/1019pumpdata.csv")
+
+```
+
+# Tidy data:
+
+```{r}
+
+nodowels2 <- nodowels %>%
+  select(-X10)
+
+colnames(nodowels2) <- colnames(dowels)
+
+dowels2 <- dowels %>%
+  mutate(dowels = 'yes dowels')
+
+nodowels2 <- nodowels2 %>%
+  mutate(dowels = 'no dowels')
+
+data <- rbind(dowels2, nodowels2)
+
+tidy <- data %>%
+  mutate(`Sample Time` = if_else(dowels == "yes dowels"&`time series` > 2, (`time series` - 3)*300 + 330, as.numeric(`Sample Time`))) %>%
+  filter(`Sample Time` < 7000)
+
+tidy <- tidy %>%
+  rename(mvc = `mass volume concentration (ppm)`, t = `Sample Time`)
+
+
+```
+
+# Initial data plot (simple):
+
+```{r}
+
+rm(data, dowels, dowels2, nodowels, nodowels2)
+
+tidy %>%
+  ggplot(aes(x = t, y = mvc, color = dowels)) +
+  geom_point()
+
+```
+
+I had been beginning to worry we might have gotten negative results (no k_c), but this graph shows that's not the case! Hoorah!
+
+# Model:
+
+no dowels:
+
+```{r}
+
+ndm <- tidy %>%
+  filter(dowels == "no dowels") %>%
+  lm(log(mvc) ~ t, data = .)
+
+summary(ndm)
+  
+```
+
+dowels:
+
+```{r}
+
+ydm <- tidy %>%
+  filter(dowels == "yes dowels") %>%
+  lm(log(mvc) ~ t, data = .)
+
+summary(ydm)
+
+```
+
+# Graph with models overlaid
+
+```{r}
+
+tidy %>%
+  ggplot(aes(x = t, y = mvc, color = dowels, group = t)) +
+  geom_point(alpha = .2) +
+  stat_function(fun = function(x) exp(coef(ndm)[1]+coef(ndm)[2]*x), color = "red", size = 0.05) +
+  stat_function(fun = function(x) exp(coef(ydm)[1]+coef(ydm)[2]*x), color = "blue", size = 0.05) +
+  xlim(c(0,NA)) +
+  scale_color_manual(values = c("red", "blue"))
+
+```
+
