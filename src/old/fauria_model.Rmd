@@ -19,9 +19,9 @@ library(broom)
 # Import pump data
 
 ```{r}
-pumpdata920 <- read_csv("../data/raw/920pumpdata.csv")
-pumpdata1005 <- read_csv("../data/raw/1005pumpdata.csv")
-pumpdata1019 <- read_csv("../data/raw/1019pumpdata.csv")
+pumpdata920 <- read_csv("../../data/raw/920pumpdata.csv")
+pumpdata1005 <- read_csv("../../data/raw/1005pumpdata.csv")
+pumpdata1019 <- read_csv("../../data/raw/1019pumpdata.csv")
 
 ```
 
@@ -59,8 +59,8 @@ pump <- mutate(pump, mvc = as.numeric(mvc))
 # Import vectrino data
 
 ```{r}
-vectrino920 <- readMat("../data/raw/920vectrino.mat")
-vectrino1005 <- readMat("../data/raw/1005vectrino.mat")
+vectrino920 <- readMat("../../data/raw/920vectrino.mat")
+vectrino1005 <- readMat("../../data/raw/1005vectrino.mat")
 ```
 
 # Tidy vectrino data and calculate velocities for runs
@@ -79,11 +79,10 @@ for (i in 1:length(vel1005)) vel1005[[i]][[1]] <- rowMeans(vel1005[[i]][[1]])
 
 vel1005 <- sqrt(vel1005[[1]][[1]]^2 + vel1005[[2]][[1]]^2 + vel1005[[3]][[1]]^2)
 
-boxplot(vel920[20000:60000], vel1005[20000:60000])
+boxplot(vel920[20000:60000], vel1005[20000:60000], main = "vectrino data for 30 Hz (left) and 15 Hz (right)", ylab = "meters per second")
 mean(vel920[20000:60000])
 mean(vel1005[20000:60000])
 
-rm(vectrino1005, vectrino920)
 ```
 
 These flow velocities are close enough to our expected ratio, 2:1, that I'm comfortable just using that.
@@ -95,8 +94,8 @@ We employed nine small sediment traps on the bottom to get absolute values for p
 Trap diameter was 17/16", or 2.698 cm. Hence, the area is in cm^2. Density is in mg/cm^2.
 
 ```{r}
-trap920 <- read_csv("../data/raw/920trapdata.csv")
-trap1005 <- read_csv("../data/raw/1005trapdata.csv")
+trap920 <- read_csv("../../data/raw/920trapdata.csv")
+trap1005 <- read_csv("../../data/raw/1005trapdata.csv")
 
 trap1005 <- trap1005 %>%
   mutate('sediment mass' = post - pre, run = "oct05") %>%
@@ -169,7 +168,7 @@ pump %>%
 
 ```
 
-```{r}
+```{r eval = FALSE}
 
 subset_model <- function(start = 600, increment = 600, n = 8) {
   

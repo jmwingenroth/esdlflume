@@ -1,0 +1,203 @@
+---
+title: "LISST comparison"
+output: html_document
+---
+
+Note: The 'raw data cleanup' code was partially copypasted from Justin's original data cleaning script, LISST_processing.R
+
+```{r libs}
+library(tidyverse)
+library(RcppRoll)
+library(broom)
+```
+
+##Raw data cleanup
+
+### yes dowels
+
+```{r}
+
+#Data Quality Control:
+#Laser reference >>0
+#Transmission should be between 0 and 1 (low transmission indicates turbid water, high tranmission indicates clear water; should disregard these data)
+
+file <- "../data/raw/Flume -- LISST -- Sept 2018-/20181115/11_15_particle_size_dist.asc"
+
+correction <- TRUE #set this to TRUE if you want to remove all data points that have a transmission outside of the optimal range of 0.1 to 0.995
+time_interval <- 1
+
+raw <- read.table(file, header=FALSE) #reading the .asc file as a table
+
+laser_reference <- any(raw[,36]==0) #laser reference values should all be much greater than 0
+
+if (laser_reference==TRUE) {
+  warning("Laser reference has a 0 value")
+}
+
+transmission <- any(c(raw[,41]<=0, raw[,41]>=1)) #it is physically impossible to have a transmission not in the range 0 to 1
+
+if (transmission==TRUE) {
+  warning("Transmission has value(s) outside of the range 0 to 1")
+}
+
+if (correction==TRUE) {
+  raw <- raw %>%
+    filter(V36>0, V41>=0.1, V41<=0.995)
+}
+
+time_converted_sec <- raw %>%
+  mutate(min=as.numeric(ifelse(V40>=100, gsub("[[:digit:]]{2}$", "", V40), 0))) %>%
+  mutate(sec=as.numeric(ifelse(V40>=1000, gsub("^[[:digit:]]{2}", "", V40), ifelse(V40<1000 & V40>=100, gsub("^[[:digit:]]", "", V40), V40)))) %>%
+  mutate(sec=sec+(min*60)) %>%
+  select(-min) #conversion of time units to seconds
+
+diff <- c(0, diff(time_converted_sec[,"sec"]))
+diff[diff<0] <- diff[diff<0]+3600
+seconds <- cumsum(diff)+1
+
+time_converted_final <- time_converted_sec %>%
+  mutate(sec=seconds) #setting seconds to start at 0 and count increasing (as opposed to cyclically)
+
+gathered_measurements <- time_converted_final %>%
+  mutate(group=as.character(ifelse(sec==0, 1, ceiling(sec/(60*time_interval))))) %>%
+  gather(key=bin, value=measurement, 1:32) #combining particle concentration data into a single field
+```
+
+```{r}
+#put bins in correct order and group by bin
+dowel_data <- gathered_measurements %>%
+  select(sec, bin, measurement) %>%
+  mutate(bin = as.integer(str_sub(bin, 2))) %>%
+  arrange(bin) %>%
+  group_by(bin)
+
+#calculate rolling mean
+dowel_data <- dowel_data %>%
+  mutate(rollmean_1000 = roll_mean(measurement, 1000, fill = NA))
+
+#filter out data from before sediment was added
+dowel_data <- dowel_data %>%
+  filter(sec>0)
+
+
+#getting rid of raw and semi-processed data
+rm(list = c("gathered_measurements",
+          "raw",
+          "time_converted_final",
+          "time_converted_sec",
+          "correction",
+          "diff",
+          "laser_reference",
+          "seconds",
+          "time_interval",
+          "transmission"))
+
+```
+
+### no dowels
+
+```{r}
+
+#Data Quality Control:
+#Laser reference >>0
+#Transmission should be between 0 and 1 (low transmission indicates turbid water, high tranmission indicates clear water; should disregard these data)
+
+file <- "../data/raw/Flume -- LISST -- Sept 2018-/20181019_size_distn.asc"
+
+correction <- TRUE #set this to TRUE if you want to remove all data points that have a transmission outside of the optimal range of 0.1 to 0.995
+time_interval <- 1
+
+raw <- read.table(file, header=FALSE) #reading the .asc file as a table
+
+laser_reference <- any(raw[,36]==0) #laser reference values should all be much greater than 0
+
+if (laser_reference==TRUE) {
+  warning("Laser reference has a 0 value")
+}
+
+transmission <- any(c(raw[,41]<=0, raw[,41]>=1)) #it is physically impossible to have a transmission not in the range 0 to 1
+
+if (transmission==TRUE) {
+  warning("Transmission has value(s) outside of the range 0 to 1")
+}
+
+if (correction==TRUE) {
+  raw <- raw %>%
+    filter(V36>0, V41>=0.1, V41<=0.995)
+}
+
+time_converted_sec <- raw %>%
+  mutate(min=as.numeric(ifelse(V40>=100, gsub("[[:digit:]]{2}$", "", V40), 0))) %>%
+  mutate(sec=as.numeric(ifelse(V40>=1000, gsub("^[[:digit:]]{2}", "", V40), ifelse(V40<1000 & V40>=100, gsub("^[[:digit:]]", "", V40), V40)))) %>%
+  mutate(sec=sec+(min*60)) %>%
+  select(-min) #conversion of time units to seconds
+
+diff <- c(0, diff(time_converted_sec[,"sec"]))
+diff[diff<0] <- diff[diff<0]+3600
+seconds <- cumsum(diff)+1
+
+time_converted_final <- time_converted_sec %>%
+  mutate(sec=seconds) #setting seconds to start at 0 and count increasing (as opposed to cyclically)
+
+gathered_measurements <- time_converted_final %>%
+  mutate(group=as.character(ifelse(sec==0, 1, ceiling(sec/(60*time_interval))))) %>%
+  gather(key=bin, value=measurement, 1:32) #combining particle concentration data into a single field
+```
+
+```{r}
+#put bins in correct order and group by bin
+ndowel_data <- gathered_measurements %>%
+  select(sec, bin, measurement) %>%
+  mutate(bin = as.integer(str_sub(bin, 2))) %>%
+  arrange(bin) %>%
+  group_by(bin)
+
+#calculate rolling mean
+ndowel_data <- ndowel_data %>%
+  mutate(rollmean_1000 = roll_mean(measurement, 1000, fill = NA))
+
+#filter out data from before sediment was added
+ndowel_data <- ndowel_data %>%
+  filter(sec>0)
+
+
+#getting rid of raw and semi-processed data
+rm(list = c("gathered_measurements",
+          "raw",
+          "time_converted_final",
+          "time_converted_sec",
+          "correction",
+          "diff",
+          "laser_reference",
+          "seconds",
+          "time_interval",
+          "transmission"))
+
+```
+
+```{r}
+
+dd <- dowel_data %>%
+  group_by(sec) %>%
+  summarise(measurement = sum(measurement), dowel = 'yes') %>%
+  mutate(sec = sec - 3500) %>%
+  filter(measurement < 200, sec > 0, sec < 6000)
+
+ndd <- ndowel_data %>%
+  group_by(sec) %>%
+  summarise(measurement = sum(measurement), dowel = 'no') %>%
+  mutate(sec = sec - 3370) %>%
+  filter(measurement < 300, sec > 0, sec < 6000)
+
+rbind(dd, ndd) %>%
+  ggplot(aes(x = sec, y = measurement, color = dowel)) +
+  geom_point(alpha = .1)
+
+```
+
+```{r}
+
+
+
+```
+
