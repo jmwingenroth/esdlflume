@@ -1,0 +1,82 @@
+---
+title: "vectrino model"
+output: html_document
+---
+
+# Libraries
+
+```{r}
+library(R.matlab)
+library(tidyverse)
+```
+
+# Read data
+
+```{r}
+
+raw <- list()
+
+for (i in 0:11) {
+  raw[[i+1]] <- readMat(paste0("../data/raw/vectrino profile experiment 181205/dowel velocity ", i, ".mat"))
+}
+
+positions <- read_csv("../data/raw/vectrino profile experiment 181205/positions.csv")
+
+``` 
+
+## Example plot
+
+```{r}
+readMat("../data/raw/vectrino profile experiment 181205/dowel velocity 0.mat")[[1]][[3]][[1]] %>%
+  as.tibble() %>%
+  gather(key, value) %>%
+  ggplot(aes(group = key, y = value)) +
+  geom_boxplot()
+
+```
+
+# Tidy X data
+
+```{r}
+
+colnames(positions)[1:4] <- c("dowels", "x pos", "z pos", "filename")
+
+positions <- positions[1:4]
+
+tidy_pos <- positions %>%
+  mutate(list_num = filename + 1) %>%
+  select(-filename)
+
+x_vel <- as.tibble(raw[[1]][[1]][[3]][[1]]) %>%
+  mutate(station = 1)
+
+for (i in 2:12) {
+  temp <- as.tibble(raw[[i]][[1]][[3]][[1]]) %>%
+    mutate(station = i)
+  x_vel <- rbind(x_vel, temp)
+}
+
+x_vel <- x_vel %>%
+  gather(key, value, -station) %>%
+  mutate(key = as.numeric(str_sub(key, 2)))
+```
+
+# Join to positional data
+
+```{r}
+
+x_vel <- left_join(x_vel, tidy_pos, by = c("station" = "list_num"))
+
+```
+
+```{r}
+
+x_vel %>%
+  ggplot(aes(x = `z pos`, group = `z pos`, y = value)) +
+  geom_boxplot(draw_quantiles = .5, trim = TRUE) +
+  facet_grid(. ~ `x pos`, scales = "free_y") +
+  #geom_vline(aes(xintercept = `z pos`)) +
+  coord_flip()
+
+```
+
