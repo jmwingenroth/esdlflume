@@ -20,6 +20,8 @@ library(tidyverse)
 
 dowels <- read_csv("../data/raw/1115pumpdata.csv")
 
+dowels1205 <- read_csv("../data/raw/1205pumpdata.csv")
+
 nodowels <- read_csv("../data/raw/1019pumpdata.csv")
 
 ```
@@ -39,7 +41,10 @@ dowels2 <- dowels %>%
 nodowels2 <- nodowels2 %>%
   mutate(dowels = 'no dowels')
 
-data <- rbind(dowels2, nodowels2)
+dowels12052 <- dowels1205 %>%
+  mutate(dowels = "yes dowels 2", `mass volume concentration (ppm)` = as.numeric(`mass volume concentration (ppm)`))
+
+data <- rbind(dowels2, nodowels2, dowels12052)
 
 tidy <- data %>%
   mutate(`Sample Time` = if_else(dowels == "yes dowels"&`time series` > 2, (`time series` - 3)*300 + 330, as.numeric(`Sample Time`))) %>%
@@ -55,7 +60,7 @@ tidy <- tidy %>%
 
 ```{r}
 
-rm(data, dowels, dowels2, nodowels, nodowels2)
+rm(data, dowels, dowels2, nodowels, nodowels2, dowels12052, dowels1205)
 
 tidy %>%
   ggplot(aes(x = t, y = mvc, color = dowels)) +
@@ -101,7 +106,7 @@ tidy %>%
   stat_function(fun = function(x) exp(coef(ndm)[1]+coef(ndm)[2]*x), color = "red", size = 0.05) +
   stat_function(fun = function(x) exp(coef(ydm)[1]+coef(ydm)[2]*x), color = "blue", size = 0.05) +
   xlim(c(0,NA)) +
-  scale_color_manual(values = c("red", "blue"))
+  scale_color_manual(values = c("red", "blue", "green"))
 
 ```
 
