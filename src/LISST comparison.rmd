@@ -258,25 +258,25 @@ rm(list = c("gathered_measurements",
 
 dd <- dowel_data %>%
   group_by(sec) %>%
-  summarise(measurement = sum(measurement), dowel = 'yes') %>%
-  mutate(sec = sec - 3500) %>%
-  filter(measurement < 200, sec > 0, sec < 6000)
+  summarise(measurement = sum(measurement), dowel = 'yes') 
+  #mutate(sec = sec - 3500) %>%
+  #filter(measurement < 200, sec > 0, sec < 6000)
 
 ndd <- ndowel_data %>%
   group_by(sec) %>%
-  summarise(measurement = sum(measurement), dowel = 'no') %>%
-  mutate(sec = sec - 3370) %>%
-  filter(measurement < 300, sec > 0, sec < 6000)
+  summarise(measurement = sum(measurement), dowel = 'no')
+  #mutate(sec = sec - 3370) %>%
+  #filter(measurement < 300, sec > 0, sec < 6000)
 
 dd2 <- dowel_data2 %>%
   group_by(sec) %>%
-  summarise(measurement = sum(measurement), dowel = 'yes2') %>%
-  mutate(sec = sec - 3370) %>%
-  filter(measurement < 300, sec > 0, sec < 6000)
+  summarise(measurement = sum(measurement), dowel = 'yes2')
+  #mutate(sec = sec - 3370) %>%
+  #filter(measurement < 300, sec > 0, sec < 6000)
 
 rbind(dd, ndd, dd2) %>%
   ggplot(aes(x = sec, y = measurement, color = dowel)) +
-  geom_point(alpha = .1)
+  geom_point(alpha = 1)
 
 ```
 
