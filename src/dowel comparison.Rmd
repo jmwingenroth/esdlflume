@@ -24,6 +24,8 @@ dowels1205 <- read_csv("../data/raw/1205pumpdata.csv")
 
 nodowels <- read_csv("../data/raw/1019pumpdata.csv")
 
+dowels0131 <- read_csv("../data/raw/0131pumpdata.csv")
+
 ```
 
 # Tidy data:
@@ -44,7 +46,13 @@ nodowels2 <- nodowels2 %>%
 dowels12052 <- dowels1205 %>%
   mutate(dowels = "yes dowels 2", `mass volume concentration (ppm)` = as.numeric(`mass volume concentration (ppm)`))
 
-data <- rbind(dowels2, nodowels2, dowels12052)
+dowels0131_2 <- dowels0131 %>%
+  select(-Initials, -Initials_1, -Initials_2, -X13) %>%
+  mutate(dowels = "yes dowels 3")
+
+colnames(dowels0131_2) <- c(colnames(dowels), "dowels")
+
+data <- rbind(dowels2, nodowels2, dowels12052, dowels0131_2)
 
 tidy <- data %>%
   mutate(`Sample Time` = if_else(dowels == "yes dowels"&`time series` > 2, (`time series` - 3)*300 + 330, as.numeric(`Sample Time`))) %>%
@@ -64,11 +72,10 @@ rm(data, dowels, dowels2, nodowels, nodowels2, dowels12052, dowels1205)
 
 tidy %>%
   ggplot(aes(x = t, y = mvc, color = dowels)) +
-  geom_point()
+  geom_smooth()
 
 ```
 
-I had been beginning to worry we might have gotten negative results (no k_c), but this graph shows that's not the case! Hoorah!
 
 # Model:
 
@@ -101,6 +108,7 @@ summary(ydm)
 ```{r}
 
 tidy %>%
+  filter(dowels!="yes dowels 3") %>%
   ggplot(aes(x = t, y = mvc, color = dowels, group = t)) +
   geom_point(alpha = .2) +
   stat_function(fun = function(x) exp(coef(ndm)[1]+coef(ndm)[2]*x), color = "red", size = 0.05) +
