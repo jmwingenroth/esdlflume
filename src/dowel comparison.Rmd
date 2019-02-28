@@ -72,7 +72,7 @@ rm(data, dowels, dowels2, nodowels, nodowels2, dowels12052, dowels1205)
 
 tidy %>%
   ggplot(aes(x = t, y = mvc, color = dowels)) +
-  geom_smooth()
+  geom_point()
 
 ```
 
