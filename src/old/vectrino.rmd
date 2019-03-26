@@ -14,7 +14,7 @@ sadly the vectrino data files are too big to fit on github. I'll therefore be ba
 
 #load in the big vectrino file
 ```{r load in the big vectrino file}
-raw<-readMat("../data/raw/experiment_20181005.278.18.Vectrino Profiler.00001.mat")
+raw<-readMat("../../data/raw/928vectrino.mat")
 ```
 
 #extract x lines
@@ -34,9 +34,9 @@ time data should be incorporated also! However, as I'm short on time:
 
 ```{r}
 
-x_avg %>%
-  filter(timestep>20000) %>%
-  summarise(avg = mean(avg))
-  
+xdat <- x_avg$avg[20000:80000]
+
+mean(xdat)
+sd(xdat)  
 ```
 

@@ -1,37 +1,81 @@
-# Solving for collection rate (k_c_d, i.e., k of (c)ollection with (d)owels)
+library(dplyr)
 
-m_0     <-  200 #inital mass of sediment in g
-m_s_nd  <-  .00854*1.2/(pi*(.0127^2)) #mass in g of sediment settled in test section as calculated from sed. trap data; nd: no dowels
-m_s_d   <-  .00680*1.2/(pi*(.0127^2)) #mass in g of sediment settled in test section as calculated from sed. trap data; d: yes dowels
-k_total_nd  <-  1.6e-4 #total exponential decay rate, from peristaltic pump model; nd: no dowels (ROUGH ESTIMATE)
-k_total_d   <-  2.2e-4 #total exponential decay rate, from peristaltic pump model; d: yes dowels (ROUGH ESTIMATE)
-t_final <-  6000 #time for which sediment traps collected sediment in seconds (ROUGH ESTIMATE)
-
-k_s <- function(m_s, k_total, m_0, t_final) { #function solved by integrating settling decay: 
-                                              #settled mass = integral{0, t_final}(suspended mass * settling rate (i.e., k_s) * dt)  
-  return(
+mutate_with_error = function(.data, f) {
+  exprs = list(
+    # expression to compute new variable values
+    deparse(f[[3]]),
     
-    m_s/(m_0/k_total*(1 - exp(-k_total*t_final)))
-    
+    # expression to compute new variable errors
+    sapply(all.vars(f[[3]]), function(v) {
+      dfdp = deparse(D(f[[3]], v))
+      sprintf('(d%s*(%s))^2', v, dfdp)
+    }) %>%
+      paste(collapse='+') %>%
+      sprintf('sqrt(%s)', .)
+  )
+  names(exprs) = c(
+    deparse(f[[2]]),
+    sprintf('d%s', deparse(f[[2]]))
   )
   
+  .data %>%
+    # the standard evaluation alternative of mutate()
+    mutate_(.dots=exprs)
 }
 
-k_s_nd <- k_s(m_s_nd, k_total_nd, m_0, t_final)
+# Solving for collection rate
+tibble(
+  
+m.0        =  200, #inital mass of sediment in g
+dm.0       =  1,  # d: error; lab precision estimate
 
-k_f <- k_total_nd - k_s_nd
+m.s.nd     =  12.22e-3, #mass in g of sediment settled in trap as calculated from sed. trap data; no dowels
+dm.s.nd    =  6.06e-3,  #1.96*sd of samples
 
-k_s_d <- k_s(m_s_d, k_total_d, m_0, t_final)
+m.s.d      =  6.80e-3, #mass in g of sediment settled in test section as calculated from sed. trap data; yes dowels
+dm.s.d     =  3.80e-3, #1.96*sd of samples
 
-k_c_d <- k_total_d - k_s_d - k_f
+k.t.nd     =  1.62e-4, #total exponential decay rate, from peristaltic pump model; nd: no dowels 
+dk.t.nd    =  5.9e-6,  #1.96*linear model std error
 
-# Solving for effective collector efficiency:
+k.t.d      =  2.229e-4, #total exponential decay rate, from peristaltic pump model; d: yes dowels 
+dk.t.d     =  9.1e-6,   #1.96*linear model std error
 
-u <- .06 #water velocity in m/s (ROUGH ESTIMATE)
-d_c <- .005 #collector diameter in m (ROUGH ESTIMATE)
-h_c <- .4 #collector height in m (equal to water depth)
-n_c <- 1750 #n of collectors
-vol <- 1.2*.4 #volume of test section in m^3
-I_c <- n_c*h_c/vol
+T          =  6000, #time for which sediment traps collected sediment in seconds
+dT         =  180,  #estimated from experiments conducted
 
-nu_prime <- k_c_d/u/d_c/I_c
+A.sec      =  1.2*.6, #area of test section
+dA.sec     =  .01,    #lab precision estimate
+
+a.trap     =  pi*.0127^2, #area of a sed trap
+da.trap    =  pi*.001^2,  #lab precision estimate
+
+u          =  0.066, #flow velocity, m/s
+du         =  0.003, #1.96*sd
+
+d.c        =  .003175, #collector diameter, m
+dd.c       =  .02*d.c, #conservative estimate (1/8 inch known from dowel specs, confirmed by calipers)
+
+h.c        =  .40, #water depth = effective collector height
+dh.c       =  .02, #estimated from experiments conducted
+
+I.c        =  1450, # dowels per m^2 (equal to h.c*N.c/V)
+dI.c       =  50    # estimated from experiments conducted
+
+) %>%
+
+mutate_with_error(c.nd ~ 1-exp(-k.t.nd*T)) %>%
+
+mutate_with_error(k.s.nd ~ m.s.nd*k.t.nd*A.sec/a.trap/m.0/c.nd) %>%
+  
+mutate_with_error(c.d ~ 1 - exp(-k.t.d*T)) %>%
+
+mutate_with_error(k.s.d ~ m.s.d*k.t.d*A.sec/a.trap/m.0/c.d) %>%
+  
+mutate_with_error(k.bg ~ k.t.nd - k.s.nd) %>%
+  
+mutate_with_error(k.c ~ k.t.d - k.s.d - k.bg) %>%
+  
+mutate_with_error(effective.collector.efficiency ~ k.c/u/d.c/I.c) -> output
+
+output <- t(output)
