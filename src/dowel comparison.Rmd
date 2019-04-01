@@ -8,8 +8,10 @@ output:
 
 ```{r message=FALSE}
 
-library(tidyverse)
+library(dplyr)
+library(readr)
 library(lme4)
+library(ggplot2)
 
 ```
 
@@ -19,7 +21,7 @@ library(lme4)
 
 nodowels <- read_csv("../data/raw/1019pumpdata.csv")
 
-nodowels_new <- read_csv("../data/raw/0308pumpdata.csv")
+nodowels_new <- read_csv("../data/raw/0321pumpdata.csv")
 
 dowels <- read_csv("../data/raw/1115pumpdata.csv")
 
@@ -110,7 +112,7 @@ tidy %>%
 
 ```
 
-```{r}
+```{r eval=F}
 
 dowelsjan <- read_csv("../data/raw/0131pumpdata.csv")[,1:12] %>%
   mutate(run = "old dowels")
