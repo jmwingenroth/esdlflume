@@ -56,9 +56,6 @@ du         =  0.003, #1.96*sd
 d.c        =  .003175, #collector diameter, m
 dd.c       =  .02*d.c, #conservative estimate (1/8 inch known from dowel specs, confirmed by calipers)
 
-h.c        =  .40, #water depth = effective collector height
-dh.c       =  .02, #estimated from experiments conducted
-
 I.c        =  1450, # dowels per m^2 (equal to h.c*N.c/V)
 dI.c       =  50    # estimated from experiments conducted
 
