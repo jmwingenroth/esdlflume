@@ -1,0 +1,20 @@
+LISST-Portable|XR Data File  Created on: Monday, April 22, 2019  16:44:57   Day: 112 
+  LISST-Portable|XR Serial number = 479
+  Firmware Version 2.050 Nov  9 2017 11:39:07
+
+Size Distribution Data in file: WSD101.asc 
+Raw Scattering Data in binary file: WSD101.dat 
+
+Sampling Parameters 
+  Sample saved on Monday, April 22, 2019  16:44:57   Day: 112
+  ZScat saved on Monday, April 22, 2019  16:21:10   Day: 112
+  Battery Charging: CC mode
+  SOP Name:  Fraunhoffer
+  Fraunhofer Scattering Model
+  Optical Model:  Spheres
+  Sample Averaging Duration:  30 seconds
+  Single Sample mode
+  Base File name:  WSD1
+  Effective Density:  2.650
+  Manual Control Mode
+  Mixer Speed during collection 55%
