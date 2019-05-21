@@ -1,0 +1,118 @@
+---
+title: "dowel comparison"
+output:
+  html_document: default
+  pdf_document: 
+    latex_engine: xelatex
+---
+
+# Libraries:
+
+```{r message=FALSE}
+
+library(tidyverse)
+
+```
+
+# Load data:
+
+```{r message=FALSE}
+
+dowels <- read_csv("../data/raw/1115pumpdata.csv")
+
+dowels1205 <- read_csv("../data/raw/1205pumpdata.csv")
+
+nodowels <- read_csv("../data/raw/1019pumpdata.csv")
+
+dowels0131 <- read_csv("../data/raw/0131pumpdata.csv")
+
+```
+
+# Tidy data:
+
+```{r}
+
+nodowels2 <- nodowels %>%
+  select(-X10)
+
+colnames(nodowels2) <- colnames(dowels)
+
+dowels2 <- dowels %>%
+  mutate(dowels = 'yes dowels')
+
+nodowels2 <- nodowels2 %>%
+  mutate(dowels = 'no dowels')
+
+dowels12052 <- dowels1205 %>%
+  mutate(dowels = "yes dowels 2", `mass volume concentration (ppm)` = as.numeric(`mass volume concentration (ppm)`))
+
+dowels0131_2 <- dowels0131 %>%
+  select(-Initials, -Initials_1, -Initials_2, -X13) %>%
+  mutate(dowels = "yes dowels 3")
+
+colnames(dowels0131_2) <- c(colnames(dowels), "dowels")
+
+data <- rbind(dowels2, nodowels2, dowels12052, dowels0131_2)
+
+tidy <- data %>%
+  mutate(`Sample Time` = if_else(dowels == "yes dowels"&`time series` > 2, (`time series` - 3)*300 + 330, as.numeric(`Sample Time`))) %>%
+  filter(`Sample Time` < 7000)
+
+tidy <- tidy %>%
+  rename(mvc = `mass volume concentration (ppm)`, t = `Sample Time`)
+
+
+```
+
+# Initial data plot (simple):
+
+```{r}
+
+rm(data, dowels, dowels2, nodowels, nodowels2, dowels12052, dowels1205)
+
+tidy %>%
+  ggplot(aes(x = t, y = mvc, color = dowels)) +
+  geom_smooth() +
+  scale_color_hue(name = "Run", labels = c("Control", "11/15/18", "12/05/18", "01/31/19"))
+  
+```
+
+
+# Model:
+
+no dowels:
+
+```{r}
+
+ndm <- tidy %>%
+  filter(dowels == "no dowels") %>%
+  lm(log(mvc) ~ t, data = .)
+
+summary(ndm)
+  
+```
+
+dowels:
+
+```{r}
+
+ydm <- tidy %>%
+  filter(dowels == "yes dowels") %>%
+  lm(log(mvc) ~ t, data = .)
+
+summary(ydm)
+
+ydm2 <- tidy %>%
+  filter(dowels == "yes dowels 2") %>%
+  lm(log(mvc) ~ t, data = .)
+
+summary(ydm2)
+
+ydm3 <- tidy %>%
+  filter(dowels == "yes dowels 3") %>%
+  lm(log(mvc) ~ t, data = .)
+
+summary(ydm3)
+
+```
+

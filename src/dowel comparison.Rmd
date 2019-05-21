@@ -79,7 +79,7 @@ summary(ndm1)
 
 ndm2 <- tidy %>%
   filter(run == "no dowels 2") %>%
-  lm(log(mvc) ~ t, data = .)
+  lm(log(mvc) ~ log(t), data = .)
 
 summary(ndm2)
   
