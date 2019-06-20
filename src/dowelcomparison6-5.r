@@ -37,6 +37,8 @@ data <- read_csv("../data/raw/0417pumpdata.csv")
 
 data2 <- read_csv("../data/raw/0506pumpdata.csv")
 
+data3 <- read_csv("../data/raw/0612pumpdata.csv")
+
 tidydata <- data %>%
   select(t = `Time (s)`, timepoint = `time series`, loc = Location,
          mvc = `mass volume concentration (ppm)`) %>%
@@ -52,12 +54,20 @@ tidydata2 <- data2 %>%
   mutate(t = (timepoint-1)*300, run = "Low Density #2") %>%
   select(-timepoint, -loc) 
 
-alldata <- rbind(tidy, tidydata, tidydata2)
+tidydata3 <- data3 %>%
+  select(t = `Time (s)`, timepoint = `time series`, loc = Location,
+         mvc = `mass volume concentration (ppm)`) %>%
+  filter(timepoint!=1) %>%
+  mutate(run = "Mid Density", t = as.integer(t)) %>%
+  select(-timepoint, -loc) 
+
+alldata <- rbind(tidy, tidydata, tidydata2, tidydata3)
 
 alldata %>%
   ggplot(aes(x = t , y = mvc, color = run)) +
-  geom_smooth()+
-  geom_point(alpha = .2)
+  geom_smooth() +
+  geom_point(alpha = .2) +
+  scale_color_manual(values = c("red", "yellow", "yellow", "orange", "black", "black"))
 
 ## Models
 
@@ -88,17 +98,3 @@ summary(newm)
 newm2 <- tidydata2 %>%
   lm(log(mvc) ~ t, data = .)
 
-alldata %>%
-  ggplot(aes(x = t, y = mvc, color = run)) +
-  geom_jitter(alpha = .2, width = 100) +
-  stat_function(fun = function(x) exp(coef(ndm1)[1]+coef(ndm1)[2]*x), color = "green", size = 0.05) +
-  stat_function(fun = function(x) exp(coef(ndm2)[1]+coef(ndm2)[2]*x), color = "yellow", size = 0.05) +
-  stat_function(fun = function(x) exp(coef(ydm)[1]+coef(ydm)[2]*x), color = "red", size = 0.05) +
-  stat_function(fun = function(x) exp(coef(newm)[1]+coef(newm)[2]*x), color = "black", size = 0.05) +
-  stat_function(fun = function(x) exp(coef(newm2)[1]+coef(newm2)[2]*x), color = "blue", size = 0.05) +
-  xlim(c(0,NA)) +
-  scale_color_manual(values = c("red", "black", "blue", "green", "yellow")) +
-  labs(x = 'Time (s)', y = 'Concentration') +
-  guides(color = guide_legend(title = "Run"))
-  
-       
