@@ -36,7 +36,7 @@
 %sure afterGN is set to 'y' below!!!!
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-filepath = '../data/raw/20190624 split vec data';
+filepath = '../data/raw/dowel split vec data';
 filename_VPro = dir(filepath);
 filename_VPro = {filename_VPro.name};
 filename_VPro = filename_VPro(4:end);
@@ -49,7 +49,7 @@ close all
     
     filename = filename_VPro{f};
     
-to_save = strcat('test/output',filename_VPro{f});
+to_save = strcat('dowel vec data output/output',filename_VPro{f});
 
 n_columns = 19; %This is the number of columns in the .dat file. It will vary depending on the options selected in the conversion process.
 time_included = 'y'; %'y' if the data file includes times, 'n' if not. (This will either be column 1 or 2. Contrary to what the hdr file says, time is in seconds!)
