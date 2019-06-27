@@ -1,5 +1,6 @@
 library(tidyverse)
-
+library(plyr)
+library(knitr)
 ########################## past runs
 
 nodowels <- read_csv("../data/raw/1019pumpdata.csv")
@@ -64,37 +65,59 @@ tidydata3 <- data3 %>%
 alldata <- rbind(tidy, tidydata, tidydata2, tidydata3)
 
 alldata %>%
-  ggplot(aes(x = t , y = mvc, color = run)) +
-  geom_smooth() +
-  geom_point(alpha = .2) +
-  scale_color_manual(values = c("red", "yellow", "yellow", "orange", "black", "black"))
+  ggplot(aes(x = t , y = log(mvc), color = run)) +
+  geom_point() +
+  geom_smooth(method = lm, formula = y~x, se = FALSE) +
+  scale_color_manual(values = c("red", "blue", "light blue", "orange", "black", "gray"))
 
-## Models
+  ## Models
 
-ndm1 <- tidy %>%
+modelcontrol1 <- tidy %>%
   filter(run == "Zero Collectors #1") %>%
   lm(log(mvc) ~ t, data = .)
 
-summary(ndm1)
 
-ndm2 <- tidy %>%
+
+modelcontrol2 <- tidy %>%
   filter(run == "Zero Collectors #2") %>%
   lm(log(mvc) ~ t, data = .)
 
-summary(ndm2)
 
-ydm <- tidy %>%
+
+modelhigh1 <- tidy %>%
   filter(run == "High Density") %>%
   lm(log(mvc) ~ t, data = .)
 
-summary(ydm)
 
-newm <- tidydata %>%
+
+modellow1 <- tidydata %>%
   filter(t>1200, t<4700|t>5500) %>%
   lm(log(mvc) ~ t, data = .)
 
-summary(newm)
 
-newm2 <- tidydata2 %>%
+
+modellow2 <- tidydata2 %>%
   lm(log(mvc) ~ t, data = .)
 
+
+
+modelmid <- tidydata3 %>%
+  lm(log(mvc) ~t, data = .)
+
+
+###
+
+
+mods <- list(modelcontrol1,
+             modelcontrol2,
+             modellow1,
+             modellow2,
+             modelmid,
+             modelhigh1)
+
+k_t <- lapply(mods, FUN = function(x) x$coefficients[2]) %>%
+  unlist()
+
+names(k_t) <- c("control1", "control2", "low1", "low2", "mid", "high")
+
+kable(k_t) %>% View()
