@@ -36,7 +36,7 @@
 %sure afterGN is set to 'y' below!!!!
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-filepath = '../data/raw/vectrino 20190619';
+filepath = '../data/raw/20190619 split vec data';
 filename_VPro = dir(filepath);
 filename_VPro = {filename_VPro.name};
 filename_VPro = filename_VPro(4:end);
