@@ -36,9 +36,10 @@
 %sure afterGN is set to 'y' below!!!!
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-filename_VPro = dir('../data/raw/vectrino profile experiment 181205/dowel*mat');
+filepath = '../data/raw/vectrino 20190619';
+filename_VPro = dir(filepath);
 filename_VPro = {filename_VPro.name};
+filename_VPro = filename_VPro(4:end);
 
 for f = 1:length(filename_VPro)
 
@@ -48,7 +49,7 @@ close all
     
     filename = filename_VPro{f};
     
-to_save = strcat('C:\Users\!j.wingenroth\Documents\esdlflume\src\shearstress\output',filename_VPro{f});
+to_save = strcat('test/output',filename_VPro{f});
 
 n_columns = 19; %This is the number of columns in the .dat file. It will vary depending on the options selected in the conversion process.
 time_included = 'y'; %'y' if the data file includes times, 'n' if not. (This will either be column 1 or 2. Contrary to what the hdr file says, time is in seconds!)
@@ -66,7 +67,7 @@ cell_select = NaN; % select a specific cell (1 through nCells) in Vectrino profi
 
 if isProfiler % for Profiler Data
 % load VII data
-load(strcat('C:\Users\!j.wingenroth\Documents\esdlflume\data\raw\vectrino profile experiment 181205\',filename))
+load(filepath + "/" + filename);
 %select out the data that we want
 v_vII(:,:,1) = Data.Profiles_VelX;
 v_vII(:,:,2) = Data.Profiles_VelY;
