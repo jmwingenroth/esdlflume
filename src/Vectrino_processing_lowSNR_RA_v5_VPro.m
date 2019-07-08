@@ -62,7 +62,7 @@ threshold_pd_cutoff = 0.1; %When the size of the ellipse used to exclude points 
 calc_turbulence = 'y'; %Set this to yes when you want to calculate and save turbulence statistics.
 interp = 1; %Interpolate bad values?  1 = yes, 0 = no.
 isProfiler = 1; % Is the data from a Vectrino Profiler?  1 = yes, 0 = no.
-despiking_on = 0; % Use Goring-Nikora despiking algorithm? 1 = on, 0 = off
+despiking_on = 1; % Use Goring-Nikora despiking algorithm? 1 = on, 0 = off
 cell_select = NaN; % select a specific cell (1 through nCells) in Vectrino profiler data.  NaN = use all cells
 
 if isProfiler % for Profiler Data
