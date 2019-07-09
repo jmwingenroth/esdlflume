@@ -84,10 +84,10 @@ subplot(2,4,6), plot(total_TKE_w, zmid, 'ko')
 total_Reynolds = tau_laminar'+tau_Reynolds(1:end-1)+diff(tau_Reynolds)/2;
 subplot(2,4,7), plot(total_Reynolds, zmid, 'ko')
 
-total_TKE(end-1)
-total_TKE_w(end-3)
-total_Reynolds(end-3)
-speed(1)
+% total_TKE(end-1)
+% total_TKE_w(end-3)
+% total_Reynolds(end-3)
+% speed(1)
 
 % tau_TKE(end-5)
 % tau_TKE_w(end-5)
