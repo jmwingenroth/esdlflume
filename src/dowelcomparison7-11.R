@@ -40,6 +40,12 @@ data2 <- read_csv("../data/raw/0506pumpdata.csv")
 
 data3 <- read_csv("../data/raw/0612pumpdata.csv")
 
+data4 <- read_csv("../data/raw/0701pumpdata.csv")
+
+highd2 <- read_csv("../data/raw/1204pumpdata.csv")
+
+highd3 <- read_csv("../data/raw/0131pumpdata.csv")
+
 tidydata <- data %>%
   select(t = `Time (s)`, timepoint = `time series`, loc = Location,
          mvc = `mass volume concentration (ppm)`) %>%
@@ -62,15 +68,37 @@ tidydata3 <- data3 %>%
   mutate(run = "Mid Density", t = as.integer(t)) %>%
   select(-timepoint, -loc) 
 
-alldata <- rbind(tidy, tidydata, tidydata2, tidydata3)
+
+tidydata4 <- data4 %>%
+  select(t = `Time (s)`, timepoint = `time series`, loc = Location,
+         mvc = `mass volume concentration (ppm)`) %>%
+  filter(timepoint!=1) %>%
+  mutate(run = "Mid Density #2 (Biof)", t = as.integer(t)) %>%
+  select(-timepoint, -loc) 
+
+tidydata5 <- highd2 %>%
+  transmute(t = `Sample Time`, timepoint = `time series`, loc = Location,
+            mvc = as.numeric(`mass volume concentration (ppm)`)) %>%
+  filter(!is.na(t), !is.na(mvc)) %>%
+  mutate(t = 300+(timepoint-3)*360, run = "High Density #2 (Biof)") %>%
+  select(-timepoint, -loc) 
+
+tidydata6 <- highd3 %>%
+  select(t = `Time (s)`, timepoint = `time series`, loc = Location,
+         mvc = `mass volume concentration (ppm)`) %>%
+  filter(timepoint!=1) %>%
+  mutate(t = 60*(5*(timepoint-2)+7), run = "High Density #3 (Biof)") %>%
+  select(-timepoint, -loc) 
+
+alldata <- rbind(tidy, tidydata, tidydata2, tidydata3, tidydata4, tidydata5, tidydata6)
 
 alldata %>%
   ggplot(aes(x = t , y = log(mvc), color = run)) +
-  geom_point() +
+  geom_jitter(alpha=0.3, width=100) +
   geom_smooth(method = lm, formula = y~x, se = FALSE) +
-  scale_color_manual(values = c("red", "blue", "light blue", "orange", "black", "gray"))
+  scale_color_manual(values = c("#d95204", "#fac60c", "#fdff7a", "#397317", "#aff288", "#0f2f99", "#70bfff","#820a94","#e78fff"))
 
-  ## Models
+## Models
 
 modelcontrol1 <- tidy %>%
   filter(run == "Zero Collectors #1") %>%
@@ -105,6 +133,20 @@ modelmid <- tidydata3 %>%
   lm(log(mvc) ~t, data = .)
 
 
+
+modelmid2 <- tidydata4 %>%
+  lm(log(mvc) ~t, data = .)
+
+
+
+modelhigh2 <- tidydata5 %>%
+  lm(log(mvc) ~t, data = .)
+
+
+
+modelhigh3 <- tidydata6 %>%
+  lm(log(mvc) ~t, data = .)
+
 ###
 
 
@@ -113,11 +155,14 @@ mods <- list(modelcontrol1,
              modellow1,
              modellow2,
              modelmid,
-             modelhigh1)
+             modelmid2,
+             modelhigh1,
+             modelhigh2,
+             modelhigh3)
 
 k_t <- lapply(mods, FUN = function(x) x$coefficients[2]) %>%
   unlist()
 
-names(k_t) <- c("control1", "control2", "low1", "low2", "mid", "high")
+names(k_t) <- c("control1", "control2", "low1", "low2", "mid", "mid2 (biof)","high","high2 (biof)","high3 (biof)")
 
-table(k_t) %>% View()
+kable(k_t)
