@@ -129,7 +129,7 @@ modellow2 <- tidydata2 %>%
 
 
 
-modelmid <- tidydata3 %>%
+modelmid1 <- tidydata3 %>%
   lm(log(mvc) ~t, data = .)
 
 
@@ -154,7 +154,7 @@ mods <- list(modelcontrol1,
              modelcontrol2,
              modellow1,
              modellow2,
-             modelmid,
+             modelmid1,
              modelmid2,
              modelhigh1,
              modelhigh2,
@@ -163,6 +163,6 @@ mods <- list(modelcontrol1,
 k_t <- lapply(mods, FUN = function(x) x$coefficients[2]) %>%
   unlist()
 
-names(k_t) <- c("control1", "control2", "low1", "low2", "mid", "mid2 (biof)","high","high2 (biof)","high3 (biof)")
+names(k_t) <- c("modelcontrol1", "modelcontrol2", "modellow1", "modellow2", "modelmid1", "modelmid2 (biof)","modelhigh1","modelhigh2 (biof)","modelhigh3 (biof)")
 
 kable(k_t)
