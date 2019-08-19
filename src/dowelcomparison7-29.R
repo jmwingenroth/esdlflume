@@ -46,9 +46,13 @@ highd2 <- read_csv("../data/raw/1204pumpdata.csv")
 
 highd3 <- read_csv("../data/raw/0131pumpdata.csv")
 
-lowdtwenty <- read_csv("../data/raw/0815pumpdata.csv")
+controlten <- read_csv("../data/raw/0729pumpdata.csv")
+
+controltwenty <- read_csv("../data/raw/0802pumpdata.csv")
 
 lowdten <- read_csv("../data/raw/0808pumpdata.csv")
+
+lowdtwenty <- read_csv("../data/raw/0815pumpdata.csv")
 
 tidydata <- data %>%
   select(t = `Time (s)`, timepoint = `time series`, loc = Location,
@@ -94,34 +98,47 @@ tidydata6 <- highd3 %>%
   mutate(t = 60*(5*(timepoint-2)+7), run = "High Density #3 (Biof)") %>%
   select(-timepoint, -loc) 
 
-tidydata7 <- lowdtwenty %>%
+tidydata7 <- controlten %>%
   select(t = `Time (s)`, timepoint = `time series`, loc = Location,
          mvc = `mass volume concentration (ppm)`) %>%
-  filter(timepoint!=20) %>%
-  mutate(run = "Low Density (20 Hz)", t = as.integer(t)) %>%
+  filter(!is.na(mvc)) %>%
+  mutate(run = "Zero Collectors (10 Hz)", t = as.integer(t)) %>%
   select(-timepoint, -loc) 
 
-tidydata8 <- lowdten %>%
+tidydata8 <- controltwenty %>%
   select(t = `Time (s)`, timepoint = `time series`, loc = Location,
          mvc = `mass volume concentration (ppm)`) %>%
+  filter(timepoint!=1, !is.na(mvc)) %>%
+  mutate(run = "Zero Collectors (20 Hz)", t = as.integer(t)) %>%
+  select(-timepoint, -loc) 
+
+tidydata9 <- lowdten %>%
+  select(t = `Time (s)`, timepoint = `time series`, loc = Location,
+         mvc = `mass volume concentration (ppm)`) %>%
+  filter(!is.na(mvc)) %>%
   mutate(run = "Low Density (10 Hz)", t = as.integer(t)) %>%
   select(-timepoint, -loc) 
 
+tidydata10 <- lowdtwenty %>%
+  select(t = `Time (s)`, timepoint = `time series`, loc = Location,
+         mvc = `mass volume concentration (ppm)`) %>%
+  filter(!is.na(mvc)) %>%
+  mutate(run = "Low Density (20 Hz)", t = as.integer(t)) %>%
+  select(-timepoint, -loc) 
 
-alldata <- rbind(tidy, tidydata, tidydata2, tidydata3, tidydata4, tidydata5, tidydata6, tidydata7, tidydata8)
+alldata <- rbind(tidy, tidydata, tidydata2, tidydata3, tidydata4, tidydata5, tidydata6, tidydata7, tidydata8, tidydata9, tidydata10)
 
 alldata %>%
   ggplot(aes(x = t , y = log(mvc), color = run)) +
   geom_jitter(alpha=0.3, width=100) +
   geom_smooth(method = lm, formula = y~x, se = FALSE) +
-  scale_color_manual(values = c("#d95204", "#fac60c", "#fdff7a", "#397317", "#aff288", "#0f2f99", "#70bfff","#820a94","#e78fff", "#9842f5", "#ffffff"))
+  scale_color_manual(values = c("#d95204", "#fac60c", "#fdff7a", "#397317", "#aff288", "#4ef50c", "#b3f50c","#0f2f99", "#70bfff","#820a94","#e78fff", "#7b5c87", "#31097d"))
 
 ## Models
 
 modelcontrol1 <- tidy %>%
   filter(run == "Zero Collectors #1") %>%
   lm(log(mvc) ~ t, data = .)
-
 
 
 modelcontrol2 <- tidy %>%
@@ -166,10 +183,17 @@ modelhigh3 <- tidydata6 %>%
   lm(log(mvc) ~t, data = .)
 
 
-modellow4 <- tidydata7 %>%
-  lm(log(mvc) ~t, data = .)
+modelcontrol3 <- tidydata7 %>%
+  lm(log(mvc) ~ t, data = .)
 
-modellow3 <- tidydata8 %>%
+
+modelcontrol4 <- tidydata8 %>%
+  lm(log(mvc) ~ t, data = .)
+
+modellow3 <- tidydata9 %>%
+  lm(log(mvc) ~ t, data = .)
+
+modellow4 <- tidydata10 %>%
   lm(log(mvc) ~t, data = .)
 
 ###
@@ -177,19 +201,21 @@ modellow3 <- tidydata8 %>%
 
 mods <- list(modelcontrol1,
              modelcontrol2,
+             modelcontrol3,
+             modelcontrol4,
              modellow1,
              modellow2,
+             modellow3,
+             modellow4,
              modelmid1,
              modelmid2,
              modelhigh1,
              modelhigh2,
-             modelhigh3,
-             modellow4,
-             modellow3)
+             modelhigh3)
 
 k_t <- lapply(mods, FUN = function(x) x$coefficients[2]) %>%
   unlist()
 
-names(k_t) <- c("modelcontrol1", "modelcontrol2", "modellow1", "modellow2", "modelmid1", "modelmid2 (biof)","modelhigh1","modelhigh2 (biof)","modelhigh3 (biof)", "modellow4 (20hz)", "modellow3 (10Hz)")
+names(k_t) <- c("modelcontrol1", "modelcontrol2", "modelcontrol3 (10 Hz)","modelcontrol4 (20 Hz)", "modellow1", "modellow2", "modellow3 (10 Hz)", "modellow4 (20 Hz)", "modelmid1", "modelmid2 (biof)","modelhigh1","modelhigh2 (biof)","modelhigh3 (biof)")
 
 kable(k_t)
