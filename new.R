@@ -51,13 +51,13 @@ variables = function(model,modelname,filename) {
     dowdens=0
     ddowdens=0
   }
-  return(list(avg,std,dowdens,ddowdens,kt,dkt))
+  return(list(modelname,avg,std,dowdens,ddowdens,kt,dkt))
 }
    
   
 #get input variables
-inpvars = variables(modelhigh3,"modelhigh3 (biof)","0131sedtraps.csv")
-names(inpvars) = c("mass_avg","mass_sd","dow_dens","ddow_dens","kt","dkt")
+inpvars = variables(modellow3,"modellow3 (10 Hz)","0808sedtraps.csv")
+names(inpvars) = c("X1","mass_avg","mass_sd","dow_dens","ddow_dens","kt","dkt")
   
 # Solving for collection rate
 tibble(
@@ -68,14 +68,14 @@ tibble(
   m.s.nd     =  12.22e-3, #mass in g of sediment settled in trap as calculated from sed. trap data; no dowels
   dm.s.nd    =  6.06e-3,  #1.96*sd of samples
   
-  m.s.d      =  inpvars[[1]], #mass in g of sediment settled in test section as calculated from sed. trap data; yes dowels
-  dm.s.d     =  inpvars[[2]], #1.96*sd of samples
+  m.s.d      =  inpvars[[2]], #mass in g of sediment settled in test section as calculated from sed. trap data; yes dowels
+  dm.s.d     =  inpvars[[3]], #1.96*sd of samples
   
   k.t.nd     =  1.62e-4, #total exponential decay rate, from peristaltic pump model; nd: no dowels 
   dk.t.nd    =  5.9e-6,  #1.96*linear model std error
   
-  k.t.d      =  inpvars[[5]], #total exponential decay rate, from peristaltic pump model; d: yes dowels 
-  dk.t.d     =  inpvars[[6]],   #1.96*linear model std error
+  k.t.d      =  inpvars[[6]], #total exponential decay rate, from peristaltic pump model; d: yes dowels 
+  dk.t.d     =  inpvars[[7]],   #1.96*linear model std error
   
   T          =  6000, #time for which sediment traps collected sediment in seconds
   dT         =  180,  #estimated from experiments conducted
@@ -92,8 +92,8 @@ tibble(
   d.c        =  .003175, #collector diameter, m
   dd.c       =  .02*d.c, #conservative estimate (1/8 inch known from dowel specs, confirmed by calipers)
   
-  I.c        =  inpvars[[3]], # dowels per m^2 (equal to h.c*N.c/V)
-  dI.c       =  inpvars[[4]]    # estimated from experiments conducted
+  I.c        =  inpvars[[4]], # dowels per m^2 (equal to h.c*N.c/V)
+  dI.c       =  inpvars[[5]]    # estimated from experiments conducted
   
 ) %>%
   
