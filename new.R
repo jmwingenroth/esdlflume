@@ -35,7 +35,7 @@ variables = function(model,modelname,filename) {
   sedmass=seddata$`sediment mass (mg)`
   sedmass=as.numeric(sedmass)
   sedmass=sedmass[!is.na(sedmass)]
-  sedmass=sedmass[!sedmass<2]*(10^-3)
+  sedmass=sedmass[!sedmass<3]*(10^-3)
   avg=mean(sedmass)
   std=sd(sedmass)
   if (grepl("high",modelname)==TRUE) {
@@ -86,8 +86,8 @@ tibble(
   a.trap     =  pi*.0127^2, #area of a sed trap
   da.trap    =  pi*.001^2,  #lab precision estimate
   
-  u          =  0.066, #flow velocity, m/s
-  du         =  0.003, #1.96*sd
+  u          =  0.022, #flow velocity, m/s
+  du         =  0.001, #1.96*sd
   
   d.c        =  .003175, #collector diameter, m
   dd.c       =  .02*d.c, #conservative estimate (1/8 inch known from dowel specs, confirmed by calipers)
