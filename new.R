@@ -42,7 +42,7 @@ variables = function(model,modelname,filename) {
     dowdens= 1450
     ddowdens= 50
   } else if (grepl("mid",modelname)==TRUE) {
-    dowdens=960
+    dowdens=800
     ddowdens=5
   } else if (grepl("low",modelname)==TRUE) {
     dowdens=278
@@ -51,13 +51,35 @@ variables = function(model,modelname,filename) {
     dowdens=0
     ddowdens=0
   }
-  return(list(modelname,avg,std,dowdens,ddowdens,kt,dkt))
+  if (grepl("10Hz",modelname)==TRUE) {
+    k.t.nd = 0.000212
+    dk.t.nd = 1.39e-5
+    u = 0.022 #flow velocity, m/s
+    du = 0.001 #1.96*sd
+    m.s.nd = 17.3475e-3
+    dm.s.nd = 6.9e-3
+  } else if (grepl("20Hz",modelname)==TRUE) {
+    k.t.nd = 0.000229
+    dk.t.nd = 1.483e-5
+    u = 0.044 #flow velocity, m/s
+    du = 0.002 #1.96*sd
+    m.s.nd = 9.946e-3
+    dm.s.nd = 6.77e-3
+  } else {
+    k.t.nd = 0.0002026
+    dk.t.nd = 8.075e-6
+    u = 0.066 #flow velocity, m/s
+    du = 0.003 #1.96*sd
+    m.s.nd = 12.22e-3
+    dm.s.nd = 6.06e-3
+  }
+  return(list(modelname,avg,std,dowdens,ddowdens, m.s.nd, dm.s.nd, u, du, k.t.nd, dk.t.nd, kt, dkt))
 }
    
   
 #get input variables
-inpvars = variables(modellow3,"modellow3 (10 Hz)","0808sedtraps.csv")
-names(inpvars) = c("X1","mass_avg","mass_sd","dow_dens","ddow_dens","kt","dkt")
+inpvars = variables(modellow3,"modellow3_10Hz","0808sedtraps.csv")
+names(inpvars) = c("run_name","mass_avg","mass_sd","dow_dens","ddow_dens","mass_sed_nd", "dmass_sed_nd", "vel", "dvel", "kt_nd", "dkt_nd","kt","dkt")
   
 # Solving for collection rate
 tibble(
@@ -77,8 +99,8 @@ tibble(
   k.t.d      =  inpvars[[6]], #total exponential decay rate, from peristaltic pump model; d: yes dowels 
   dk.t.d     =  inpvars[[7]],   #1.96*linear model std error
   
-  T          =  6000, #time for which sediment traps collected sediment in seconds
-  dT         =  180,  #estimated from experiments conducted
+  Time          =  6000, #time for which sediment traps collected sediment in seconds
+  dTime         =  180,  #estimated from experiments conducted
   
   A.sec      =  1.2*.6, #area of test section
   dA.sec     =  .01,    #lab precision estimate
@@ -97,11 +119,11 @@ tibble(
   
 ) %>%
   
-  mutate_with_error(c.nd ~ 1-exp(-k.t.nd*T)) %>%
+  mutate_with_error(c.nd ~ 1-exp(-k.t.nd*Time)) %>%
   
   mutate_with_error(k.s.nd ~ m.s.nd*k.t.nd*A.sec/a.trap/m.0/c.nd) %>%
   
-  mutate_with_error(c.d ~ 1 - exp(-k.t.d*T)) %>%
+  mutate_with_error(c.d ~ 1 - exp(-k.t.d*Time)) %>%
   
   mutate_with_error(k.s.d ~ m.s.d*k.t.d*A.sec/a.trap/m.0/c.d) %>%
   

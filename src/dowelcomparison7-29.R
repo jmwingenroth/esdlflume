@@ -216,6 +216,6 @@ mods <- list(modelcontrol1,
 k_t <- lapply(mods, FUN = function(x) x$coefficients[2]) %>%
   unlist()
 
-names(k_t) <- c("modelcontrol1", "modelcontrol2", "modelcontrol3 (10 Hz)","modelcontrol4 (20 Hz)", "modellow1", "modellow2", "modellow3 (10 Hz)", "modellow4 (20 Hz)", "modelmid1", "modelmid2 (biof)","modelhigh1","modelhigh2 (biof)","modelhigh3 (biof)")
+names(k_t) <- c("modelcontrol1", "modelcontrol2", "modelcontrol3_10Hz","modelcontrol4_20Hz", "modellow1", "modellow2", "modellow3_10Hz", "modellow4_20Hz", "modelmid1", "modelmid2 (biof)","modelhigh1","modelhigh2 (biof)","modelhigh3 (biof)")
 
 kable(k_t)
