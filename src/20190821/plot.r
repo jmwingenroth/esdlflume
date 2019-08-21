@@ -2,7 +2,7 @@
 
 smooth_plot <- function(x) {
   x %>%
-    ggplot(aes(x = timepoint, y = mvc, color = run)) +
+    ggplot(aes(x = t, y = mvc, color = run)) +
     geom_smooth()
 }
 
@@ -30,7 +30,7 @@ tidy_data <- tidy_data %>%
 p3 <- tidy_data %>%
   filter(!run %in% c('0131pumpdata', '0308pumpdata')) %>%
   group_by(loc, height) %>%
-  ggplot(aes(x = timepoint, y = log(mvc), color = loc, lty = as.character(height))) +
+  ggplot(aes(x = t, y = log(mvc), color = loc, lty = as.character(height))) +
   geom_line() +
   facet_wrap(~run) 
 

@@ -25,5 +25,10 @@ tidy_data <- do.call(rbind, tidy_data)
 
 tidy_data <- tidy_data %>%
   mutate(mvc = as.numeric(mvc)) %>%
-  filter(!(timepoint == 1 & mvc < 3), !is.na(mvc))
+  filter(!(timepoint == 1 & mvc < 3), !is.na(mvc), timepoint<22)
 
+tidy_data <- tidy_data %>%
+  mutate(t = if_else(run %in% c('0612pumpdata',
+                                '0802pumpdata',
+                                '1019pumpdata'),
+                     300*(timepoint-1), 300*timepoint))
