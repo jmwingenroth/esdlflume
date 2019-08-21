@@ -1,3 +1,5 @@
+# load raw_data
+
 data_path <- "../data/raw/"
 
 files <- raw_data <- list.files(data_path, "pump")
@@ -5,6 +7,8 @@ files <- raw_data <- list.files(data_path, "pump")
 raw_data <- lapply(paste0(data_path, files), read_csv)
 
 names(raw_data) <- str_extract(files, ".*(?=\\.)")
+
+# compile a table of variables of interest (tidy_data)
 
 tidy_data <- lapply(raw_data, function(X) select(X, 
                                     timepoint = contains("series"),
@@ -17,10 +21,9 @@ tidy_data <-
 
 tidy_data <- do.call(rbind, tidy_data)
 
+# remove blanks
+
 tidy_data <- tidy_data %>%
   mutate(mvc = as.numeric(mvc)) %>%
-  filter(!(timepoint == 1 & mvc < 3))
+  filter(!(timepoint == 1 & mvc < 3), !is.na(mvc))
 
-tidy_data %>%
-  ggplot(aes(x = timepoint, y = mvc, color = run)) +
-  geom_smooth()
