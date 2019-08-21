@@ -27,4 +27,3 @@ tidy_data <- tidy_data %>%
   mutate(mvc = as.numeric(mvc)) %>%
   filter(!(timepoint == 1 & mvc < 3), !is.na(mvc))
 
-time = ifel
