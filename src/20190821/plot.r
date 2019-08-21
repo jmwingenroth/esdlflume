@@ -33,7 +33,3 @@ p3 <- tidy_data %>%
   ggplot(aes(x = t, y = log(mvc), color = loc, lty = as.character(height))) +
   geom_line() +
   facet_wrap(~run) 
-
-ggsave("20190821/rawsmoothed.png", p1)
-ggsave("20190821/startingvals.png", p2)
-ggsave("20190821/allruns.png", p3)
