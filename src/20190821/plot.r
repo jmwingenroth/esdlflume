@@ -34,11 +34,6 @@ p3 <- tidy_data %>%
   geom_line() +
   facet_wrap(~run) 
 
-# TODO
-# 1. change plot names to dowel density
-# 2. run models
-# 3. GLMM of residuals to assess height and location effects
-
 ggsave("20190821/rawsmoothed.png", p1)
 ggsave("20190821/startingvals.png", p2)
 ggsave("20190821/allruns.png", p3)
