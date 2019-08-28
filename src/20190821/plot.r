@@ -28,7 +28,7 @@ tidy_data <- tidy_data %>%
 # plot with other vars of interest
 
 p3 <- tidy_data %>%
-  filter(!run %in% c('0131pumpdata', '0308pumpdata')) %>%
+#  filter(!run %in% c('0131pumpdata', '0308pumpdata')) %>%
   group_by(loc, height) %>%
   ggplot(aes(x = t, y = log(mvc), color = loc, lty = as.character(height))) +
   geom_line() +
