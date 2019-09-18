@@ -53,7 +53,7 @@ lmtable <- function(indata) {
     as.tibble() %>%
     mutate_at(vars(`(Intercept)`, t), as.numeric) %>%
     mutate(starting_conc = exp(`(Intercept)`)) %>%
-    transmute(date = str_sub(V1,,4), k_t = t, starting_conc)
+    transmute(date = str_sub(V1,,6), k_t = t, starting_conc)
   
 }
 
@@ -65,6 +65,6 @@ r2table <- function(indata) {
     do.call(rbind, .) %>%
     cbind(names(lms), .) %>%
     as.tibble() %>%
-    transmute(date = str_sub(V1,,4), r2 = V2)
+    transmute(date = str_sub(V1,,6), r2 = V2)
   
 }
