@@ -2,24 +2,29 @@
 
 smooth_plot <- function(x) {
   x %>%
-    ggplot(aes(x = t, y = mvc, color = run)) +
-    geom_smooth()
+    ggplot(aes(x = timepoint, y = mvc, color = run)) +
+    geom_smooth() +
+    geom_point(alpha = .4)
 }
 
-p1 <- smooth_plot(tidy_data)
+p1 <- smooth_plot(d3)
 
-# remove runs not of interest
+p1
 
-p2 <- tidy_data %>%
-  filter(timepoint < 3) %>%
+# remove runs with blanks
+
+p2 <- d3 %>%
+  filter(timepoint == 1) %>%
   ggplot(aes(x = run, y = mvc)) +
   geom_boxplot() +
   geom_hline(yintercept = 30) 
 
-anomalous <- tidy_data %>%
+p2
+
+tidy_data %>%
   filter(timepoint < 3) %>%
   group_by(run) %>%
-  summarise(id = median(mvc) < 30) %>%
+  summarise(id = median(mvc) < 30) #%>%
   filter(id == TRUE) 
 
 tidy_data <- tidy_data %>%
