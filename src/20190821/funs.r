@@ -1,8 +1,8 @@
-load_pump_data <- function(path = "../data/raw/") {
+load_pump_data <- function(path = "../data/raw/peristaltic pumps/") {
   
   data_path <- path
   
-  files <- raw_data <- list.files(data_path, "pump")
+  files <- list.files(data_path, "pump")
   
   raw_data <- lapply(paste0(data_path, files), read_csv)
   
@@ -45,15 +45,12 @@ remove_blanks <- function(indata, threshold = 10) {
 
 lmtable <- function(indata) {
   
-  lms <- lmList(log(mvc)~t | run, data = d3)
+  lms <- lmList(log(mvc)~t | run, data = indata)
   
-  lapply(lms, coef) %>% 
-    do.call(rbind, .) %>%
+  summary(lms)$coefficients[,,'t'][,1:2] %>%
     cbind(names(lms), .) %>%
     as.tibble() %>%
-    mutate_at(vars(`(Intercept)`, t), as.numeric) %>%
-    mutate(starting_conc = exp(`(Intercept)`)) %>%
-    transmute(date = str_sub(V1,,6), k_t = t, starting_conc)
+    transmute(date = str_sub(V1,,6), k_t = as.numeric(Estimate), dk_t = as.numeric(`Std. Error`))
   
 }
 
@@ -67,4 +64,27 @@ r2table <- function(indata) {
     as.tibble() %>%
     transmute(date = str_sub(V1,,6), r2 = V2)
   
+}
+
+mutate_with_error = function(.data, f) {
+  exprs = list(
+    # expression to compute new variable values
+    deparse(f[[3]]),
+    
+    # expression to compute new variable errors
+    sapply(all.vars(f[[3]]), function(v) {
+      dfdp = deparse(D(f[[3]], v))
+      sprintf('(d%s*(%s))^2', v, dfdp)
+    }) %>%
+      paste(collapse='+') %>%
+      sprintf('sqrt(%s)', .)
+  )
+  names(exprs) = c(
+    deparse(f[[2]]),
+    sprintf('d%s', deparse(f[[2]]))
+  )
+  
+  .data %>%
+    # the standard evaluation alternative of mutate()
+    mutate_(.dots=exprs)
 }
