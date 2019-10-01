@@ -51,8 +51,13 @@ p3 <- d3 %>%
   ggplot(aes(x = loc, y = scaledresid)) +
   geom_violin(draw_quantiles = .5)
 
-p1
+meta <- read_csv("../data/run_metadata.csv")
+meta$date <- as.character(meta$date)
+left_join(meta, s1, by = "date")
 
 # TODO
 # change plot names to dowel density
 # table to calculate vars of interest with error propogation
+### [x] velocity and dowel density from metadata
+### [ ] sediment trap data
+
