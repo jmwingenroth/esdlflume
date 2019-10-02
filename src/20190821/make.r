@@ -53,11 +53,25 @@ p3 <- d3 %>%
 
 meta <- read_csv("../data/run_metadata.csv")
 meta$date <- as.character(meta$date)
-left_join(meta, s1, by = "date")
+s1 <- left_join(meta, s1, by = "date")
+
+sed1 <- load_trap_data() %>%
+  mutate(run = str_sub(run,,6)) %>%
+  filter(!is.na(sed))
+
+lm(sed~station, data = sed1) %>%
+  anova() #station matters!
+
+sed1 %>%
+  group_by(date = run) %>%
+  summarise(m_s = mean(sed), dm_s = sd(sed)) %>%
+  right_join(s1, by = "date")
 
 # TODO
 # change plot names to dowel density
 # table to calculate vars of interest with error propogation
 ### [x] velocity and dowel density from metadata
 ### [ ] sediment trap data
+##### lm on position (ABC;DEF;GHI)
+##### edit filenames to correspond to pump data
 

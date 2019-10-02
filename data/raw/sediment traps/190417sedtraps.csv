@@ -1,4 +1,4 @@
-Trap ID,Distance from upstream edge of test section (cm),Distance from inner wall of flume (cm),Filter mass (dried overnight) (mg),initials,dried sediment+filter mass (mg),initials,sediment mass (mg)
+station,Distance from upstream edge of test section (cm),Distance from inner wall of flume (cm),pre,initials,post,initials,sed
 A,,,59.48,CY,73.21,CY,13.73
 B,,,56.76,CY,65.93,CY,9.17
 C,,,59.27,CY,70.69,CY,11.42

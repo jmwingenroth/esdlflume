@@ -29,6 +29,34 @@ load_pump_data <- function(path = "../data/raw/peristaltic pumps/") {
   
 }
 
+load_trap_data <- function(path = "../data/raw/sediment traps/") {
+  
+  data_path <- path
+  
+  files <- list.files(data_path, "sedtraps")
+  
+  raw_data <- lapply(paste0(data_path, files), read_csv)
+  
+  names(raw_data) <- str_extract(files, ".*(?=\\.)")
+  
+  # compile a table of variables of interest (tidy_data)
+  
+  tidy_data <- lapply(raw_data, function(X) select(X, 
+                                                   station,
+                                                   pre,
+                                                   post,
+                                                   sed))
+  
+  tidy_data <- 
+    Map(function(X,Y) mutate(X, run = Y), X = tidy_data, Y = names(tidy_data))
+  
+  tidy_data <- do.call(rbind, tidy_data)
+  
+  tidy_data %>%
+    mutate_at(vars(pre, post, sed), as.numeric)
+  
+}
+
 remove_blanks <- function(indata, threshold = 10) {
   
   blanks <- indata %>%
