@@ -62,10 +62,11 @@ sed1 <- load_trap_data() %>%
 lm(sed~station, data = sed1) %>%
   anova() #station matters!
 
-sed1 %>%
+s2 <- sed1 %>%
   group_by(date = run) %>%
   summarise(m_s = mean(sed), dm_s = sd(sed)) %>%
-  right_join(s1, by = "date")
+  right_join(s1, by = "date") %>%
+  select(-run)
 
 # TODO
 # change plot names to dowel density

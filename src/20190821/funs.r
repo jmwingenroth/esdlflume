@@ -73,12 +73,12 @@ remove_blanks <- function(indata, threshold = 10) {
 
 lmtable <- function(indata) {
   
-  lms <- lmList(log(mvc)~t | run, data = indata)
-  
-  summary(lms)$coefficients[,,'t'][,1:2] %>%
-    cbind(names(lms), .) %>%
-    as.tibble() %>%
-    transmute(date = str_sub(V1,,6), k_t = as.numeric(Estimate), dk_t = as.numeric(`Std. Error`))
+  indata %>%
+    group_by(run) %>%
+    do(model = lm(log(mvc)~t, data = .)) %>%
+    tidy(model) %>%
+    filter(term == "t") %>%
+    transmute(date = run, k_t = estimate, dk_t = std.error)
   
 }
 
