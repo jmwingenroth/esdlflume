@@ -62,6 +62,13 @@ sed1 <- load_trap_data() %>%
 lm(sed~station, data = sed1) %>%
   anova() #station matters!
 
+sed1 %>% 
+  group_by(station) %>% 
+  summarise(sed = mean(sed)) %>% 
+  ungroup() %>% 
+  group_by((row_number()-1) %/% 3) %>% 
+  summarise(mean(sed)) # position likely explains why ^!
+
 s2 <- sed1 %>%
   group_by(date = run) %>%
   summarise(m_s = mean(sed)/1000, dm_s = 1.96*sd(sed)/1000) %>%
@@ -108,8 +115,12 @@ s4 <- s3 %>%
   
 s4 %>%
   filter(effective.collector.efficiency<1, growth_days==0) %>%
-  ggplot(aes(x = Re.c, y = effective.collector.efficiency, color = factor(I.c))) +
-  geom_point()
+  ggplot(aes(x = Re.c, y = effective.collector.efficiency, 
+             ymin = effective.collector.efficiency - CI_error_95,
+             ymax = effective.collector.efficiency + CI_error_95,
+             color = factor(I.c))) +
+  geom_point() +
+  geom_errorbar()
 
 write_csv(s4, "collector_efficiency_output.csv")
 
