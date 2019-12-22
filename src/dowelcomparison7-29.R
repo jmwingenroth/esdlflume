@@ -3,11 +3,11 @@ library(plyr)
 library(knitr)
 ########################## past runs
 
-nodowels <- read_csv("../data/raw/1019pumpdata.csv")
+nodowels <- read_csv("../data/raw/peristaltic pumps/181019pumpdata.csv")
 
-nodowels_new <- read_csv("../data/raw/0321pumpdata.csv")
+nodowels_new <- read_csv("../data/raw/peristaltic pumps/190321pumpdata.csv")
 
-dowels <- read_csv("../data/raw/1115pumpdata.csv")
+dowels <- read_csv("../data/raw/peristaltic pumps/181115pumpdata.csv")
 
 nodowels_2 <- nodowels %>%
   select(t = `Sample Time (s)`, mvc = `mass volume concentration (ppm)`) %>%

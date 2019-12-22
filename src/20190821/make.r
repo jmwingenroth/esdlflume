@@ -10,7 +10,7 @@ d3 <- d2 %>%
   mutate(t = timepoint*300) %>%
   mutate(run = str_sub(run,,6)) %>%
   
-  filter(! run %in% c(180920, 180928, 181005, 190308, 190815, 181019, 190802))
+  filter(! run %in% c(180920, 180928, 181005, 190308, 190815, 181019, 190802, 191126))
 
 s1 <- lmtable(d3) %>%
   left_join(r2table(d3), by = "date") %>%
@@ -41,10 +41,10 @@ d3 <- d3 %>%
   ungroup()
 attr(d3$mvcresid, "label") <- "Residuals"
 
-lm(scaledresid ~ loc + as.character(height), data = d3) %>% summary()
+lm(mvcresid ~ as.character(height), data = d3) %>% anova()
 
 p2 <- d3 %>%
-  ggplot(aes(x = factor(height), y = scaledresid)) +
+  ggplot(aes(x = factor(height), y = mvcresid)) +
   geom_violin(draw_quantiles = .5)
 
 p3 <- d3 %>%
@@ -112,15 +112,6 @@ s3 <- s2 %>%
   
 s4 <- s3 %>%
   select(date, I.c, Re.c, growth_days, effective.collector.efficiency, CI_error_95 = deffective.collector.efficiency)
-  
-s4 %>%
-  filter(effective.collector.efficiency<1, growth_days==0) %>%
-  ggplot(aes(x = Re.c, y = effective.collector.efficiency, 
-             ymin = effective.collector.efficiency - CI_error_95,
-             ymax = effective.collector.efficiency + CI_error_95,
-             color = factor(I.c))) +
-  geom_point() +
-  geom_errorbar()
 
 write_csv(s4, "collector_efficiency_output.csv")
 
@@ -132,3 +123,76 @@ write_csv(s4, "collector_efficiency_output.csv")
 ##### lm on position (ABC;DEF;GHI)
 ##### edit filenames to correspond to pump data
 
+#poster plots
+
+p3 <- d3 %>% 
+  group_by(height) %>%  
+  summarise(m = mean(mvcresid), 
+            s = sd(mvcresid)/sqrt(n()),
+            ct = n()) %>% 
+  ggplot(aes(y = 40 - height, x = m, xmin = m-1.96*s, xmax = m+1.96*s)) +
+  geom_point() + geom_errorbarh() + 
+  theme_classic(base_size = 30) + 
+  scale_y_reverse() + 
+  geom_hline(yintercept = 0, color = "blue") + 
+  geom_hline(yintercept = 40, color = "tan") + 
+  geom_text(aes(x = -.25, y = 2, label = "Water surface"), color = "blue", size = 8, hjust = "left") + 
+  geom_text(aes(x = -.25, y = 42, label = "Channel bottom"), color = "tan", size = 8, hjust = "left") + 
+  geom_text(aes(y = 40 - height, x = m + 1.96*s +.2, label = paste0("n = ",ct)), size = 8) +
+  labs(x = "Concentration residual [mg/L]", y = "Depth [cm]") +
+  ggtitle("Depth profile of suspended \nsediment concentration") +
+  scale_x_continuous(limits = c(-.25, 1.5))
+
+ggsave(p3, filename = "p3.png", width = 8, height = 6, dpi = 300)
+
+
+
+p1 <- d3 %>% 
+  filter(run == 190926) %>% 
+  ggplot(aes(x = t, group = t, y = mvc)) + 
+  geom_point(size = 2) + 
+  theme_classic(base_size = 30) + 
+  stat_function(fun = function(t) exp(lms$`190926`$coefficients[1]+t*lms$`190926`$coefficients[2]), 
+                size = 1, color = "red") +
+  ggtitle("2019-09-26, Re = 152.8, \nlow collector-density, no biofilm") +
+  labs(x = "Time [s]", y = "Concentration [mg/L]") +
+  geom_text(aes(x = 3500, y = 50), label = expression(paste(R^2," = 0.89")),
+            hjust = "left", size = 8) +
+  geom_text(aes(x = 3500, y = 40), label = expression(paste(k[tot]," = 2.131e-4 ", s^-1)),
+            hjust = "left", size = 8)
+
+ggsave(p1, filename = "p1.png", width = 9, height = 6, dpi = 300)
+
+
+
+p2 <- d3 %>%
+  ggplot(aes(x = lmres)) +
+  theme_classic(base_size = 30) +
+  geom_histogram(color = "black", fill = "lightsteelblue") +
+  geom_vline(xintercept = mean(d3$lmres), lty = 2, size = 1) +
+  labs(x = "Residual [log(mg/L)]", y = "Frequency") +
+  ggtitle("Distribution of residuals from\nlinear (log-transform) model")
+
+ggsave(p2, filename = "p2.png", width = 9, height = 6, dpi = 300)
+
+p4 <- s4 %>%
+  filter(effective.collector.efficiency<1, Re.c>220) %>%
+  ggplot(aes(x = growth_days, y = effective.collector.efficiency*100, 
+             color = factor(I.c))) +
+  geom_point(size = 2) +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_classic(base_size = 30) +
+  labs(y = "%ECE", x = "Biofilm growth days", color = "Collector\ndensity") +
+  ggtitle("Effective capture efficiency\nresponse to biofilm growth") +
+  theme(legend.background = element_rect(colour = "black"))
+p4  
+ggsave(p4, filename = "p4.png", width = 10, height = 8, dpi = 300)
+
+p5 <- s4 %>%
+  filter(effective.collector.efficiency<1, I.c<300, I.c > 250, growth_days==0) %>%
+  ggplot(aes(x = Re.c, y = effective.collector.efficiency*100)) +
+  geom_point(aes(color = 'red'), size = 2, show.legend = FALSE) +
+  theme_classic(base_size = 30) +
+  ggtitle("Effective capture efficiency\nat different Reynolds numbers") +
+  labs(y = "%ECE", x = "Reynolds number") 
+p5
