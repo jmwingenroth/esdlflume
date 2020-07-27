@@ -36,7 +36,7 @@
 %sure afterGN is set to 'y' below!!!!
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-filepath = '../data/raw/control';
+filepath = '../data/raw/control spit vec data';
 filename_VPro = dir(filepath);
 filename_VPro = {filename_VPro.name};
 filename_VPro = filename_VPro(4:end);
@@ -427,6 +427,7 @@ if calc_turbulence == 'y'
         for ii = 1:4
             for jj = 1:4
                 vpvp_mean(ii,jj,c) = mean(vp_clean{c}(:,ii).*vp_clean{c}(:,jj),1);
+                %Laurel: what is vpvp_mean?
             end
         end
     end
@@ -434,18 +435,18 @@ if calc_turbulence == 'y'
         if exist('msg') 
             vpvp_mean = NaN;
         else
-x = mean(v(:,1));
-y = mean(v(:,2));
-z = mean(v(:,3));
-z2 = mean(v(:,4));
-vp = v-repmat([x,y,z, z2], size(v,1), 1);
-vps = mean(vp.^2);
-vpvp_mean = NaN(4);
-for ii = 1:4
-    for jj = 1:4
-        vpvp_mean(ii,jj) = mean(vp(:,ii).*vp(:,jj),1);
-    end
-end
+            x = mean(v(:,1));
+            y = mean(v(:,2));
+            z = mean(v(:,3));
+            z2 = mean(v(:,4));
+            vp = v-repmat([x,y,z, z2], size(v,1), 1);
+            vps = mean(vp.^2);
+            vpvp_mean = NaN(4);
+            for ii = 1:4
+                for jj = 1:4
+                    vpvp_mean(ii,jj) = mean(vp(:,ii).*vp(:,jj),1);
+                end
+            end
 
     end
     end
@@ -465,18 +466,19 @@ end
 pct_rm
 
 if ~exist('msg') % don't save any data if we produced an error message
-if ~isempty(t)
-    if ~isProfiler
-        figure, plot(t, v),% xlim([0,min(10, max(t))])
-        mint = t(1);
-    end
+    if ~isempty(t)
+        if ~isProfiler
+            figure, plot(t, v),% xlim([0,min(10, max(t))])
+            mint = t(1);
+        end
     if calc_turbulence == 'y'
         save(to_save, 'v', 't', 'vpvp_mean','pct_rm')
     else
         save(to_save, 'v', 't','pct_rm')
     end
     fprintf('%s%d', 'First valid time(min)is ',mint)
-else
+
+    else
     figure, plot(counter, v)
     if calc_turbulence == 'y'
         save(to_save, 'v', 'counter', 'vpvp_mean','pct_rm')

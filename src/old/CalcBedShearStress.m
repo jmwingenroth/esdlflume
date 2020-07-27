@@ -8,18 +8,19 @@
 clc
 close all
 %USER INPUT SECTION
-nbins = sum(badbeams'<5&cell2mat(pct_rm)<0.5);%18;
+nbins = sum(badbeams'<5&cell2mat(pct_rm)<0.5);%18; Laurel: what is bad
+%beams, and why do we need bins for the vectrino data? 
 bin_size = .002;
 dist_above_bed = 6.4;
-bin_range = 4.1:0.20:7.5; %4.05:0.2:6.45;
+bin_range = 4.1:0.20:7.5; %4.05:0.2:6.45; %Laurel: why do we need bin_range?
 bin_range=bin_range(badbeams'<5&cell2mat(pct_rm)<0.5);
 z = dist_above_bed-bin_range;
 zmid = z(1:end-1)+0.1;
-vpvp_mean=vpvp_mean(:,:,badbeams'<5&cell2mat(pct_rm)<0.5);
-v = v(badbeams'<5&cell2mat(pct_rm)<0.5);
+%vpvp_mean=vpvp_mean(:,:,badbeams'<5&cell2mat(pct_rm)<0.5);
+%v = v(badbeams'<5&cell2mat(pct_rm)<0.5);
 rho = 997; %kg/m^3
 dyn_visc = 8.9e-4; %Pa*s
-goodbins = intersect(find(badbeams<5), find(cell2mat(pct_rm)<0.5));
+%goodbins = intersect(find(badbeams<5), find(cell2mat(pct_rm)<0.5));
 % figure(1), clf
 % n = 1;
 % labels = 'uvww';
@@ -33,7 +34,8 @@ goodbins = intersect(find(badbeams<5), find(cell2mat(pct_rm)<0.5));
 % end
 vmeans = NaN(nbins, 4);
 uvmean = NaN(nbins,1);
-uvpmean = NaN(1, nbins);
+uvpmean = NaN(1, nbins); %Laurel: what is vmeans, uvmeans, and uvpmean? is it just 
+%the velocities in different directions? 
 for ii = 1:length(goodbins)
     vmeans(ii, :) = mean(v{ii});
     latspeed = sqrt((v{ii}(:,1)).^2+(v{ii}(:,2)).^2);
@@ -54,6 +56,7 @@ tau_TKE = 0.19*0.5*rho*(squeeze(vpvp_mean(1,1,:)+vpvp_mean(2,2,:))+transpose(mea
 figure(3), subplot(2,4,1), plot(tau_TKE, z, 'ko')
 title('TKE')
 tau_TKE_w = 0.9.*rho.*mean(squeeze([vpvp_mean(3,3,:), vpvp_mean(4,4,:)]));
+%Laurel: is tau_TKE_w the bed shear stress?
 figure(3), subplot(2,4,2), plot(tau_TKE_w, z, 'ko')
 title('TKE w')
 tau_Reynolds = -rho*uvpmean;
