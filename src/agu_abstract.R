@@ -37,10 +37,19 @@ vec_tv_table <- as.tibble(do.call(rbind, vec_tv2)) %>%
   mutate(run = str_extract(run, "/.*")) %>%
   mutate_at(vars(t,x,y,z1,z2), as.numeric)
 
+heights <- c(7,15,25,36,NA)
+
 vec_tv_table %>%
   mutate(density = str_sub(run, 2, 4),
          freq = str_sub(run,8,9),
-         )
+         seq = as.numeric(str_sub(run,12,12)),
+         bottomdist = heights[seq]) %>%
+  group_by(run) %>%
+  mutate(x_mean = mean(x)) %>%
+  ungroup() %>%
+  distinct(density, freq, bottomdist, x_mean) %>%
+  filter(!is.na(bottomdist)) %>%
+  ggplot(aes(x = x_mean, y = bottomdist, color = ))
   
   
   # filter(str_detect(run, "Contr")) %>%
