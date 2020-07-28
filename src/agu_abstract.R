@@ -1,4 +1,9 @@
-#So, here's the script to make estimates for the AGU abstract. This will probably evolve into the script where we produce figures for the paper, meaning that along with the data it references, it will be the only code that needs to go in the paper repo. However, other code that generates important info but not figures (nothing coming to mind in particular) might be good to include also if we end up making the repo publicly available.
+#So, here's the script to make estimates for the AGU abstract. 
+#This will probably evolve into the script where we produce figures for the 
+#paper, meaning that along with the data it references, it will be the only code
+#that needs to go in the paper repo. However, other code that generates 
+#important info but not figures (nothing coming to mind in particular) might be 
+#good to include also if we end up making the repo publicly available.
 
 library(tidyverse)
 
@@ -8,7 +13,8 @@ library(R.matlab)
 
 ## flow velocity profiles
 
-vecpaths <- list.files("data/TurbulenceDataCleaned/", recursive = T, pattern = ".mat")
+vecpaths <- list.files("data/TurbulenceDataCleaned/", recursive = T, 
+                       pattern = ".mat")
 
 vecdata <- lapply(paste0("data/TurbulenceDataCleaned/",vecpaths), readMat)
 
@@ -26,7 +32,8 @@ for (i in 1:length(vec_v)) {
   
   for (j in 1:length(vec_v[[i]])) {
     
-    vec_tv[[i]][[j]] <- cbind(names(vec_t)[[i]], j, vec_t[[i]][[j]][[1]], vec_v[[i]][[j]][[1]])
+    vec_tv[[i]][[j]] <- cbind(names(vec_t)[[i]], j, vec_t[[i]][[j]][[1]], 
+                              vec_v[[i]][[j]][[1]])
     colnames(vec_tv[[i]][[j]]) <- c("run", "ht", "t", "x","y","z1","z2")
   }
 }
@@ -49,14 +56,22 @@ vec_tv_table %>%
   ungroup() %>%
   distinct(density, freq, bottomdist, x_mean) %>%
   filter(!is.na(bottomdist)) %>%
-  ggplot(aes(x = x_mean, y = bottomdist, color = ))
+  ggplot(aes(x = x_mean, y = bottomdist, color = density, lty = freq, 
+             group = paste(density, freq))) +
+  geom_path(size = .65) +
+  labs(x = "Longitudinal Velocity (m/s)", y = "Height From Bottom (cm)", 
+       color = "Collector Density Treatment", freq = "Pump Frequency (Hz)") +
+  scale_x_continuous(limits = c(0,NA), minor_breaks = NULL) +
+  scale_y_continuous(limits = c(0,NA), minor_breaks = NULL, ) +
+  theme_bw() +
+  geom_point(shape = 4)
   
-  
-  # filter(str_detect(run, "Contr")) %>%
-  # group_by(run) %>%
-  # mutate(t_rel = t - min(t), 
-  #        bottomdist = str_extract(run, "Hz.*"),
-  #        freq = str_extract(run, ".*Hz")) %>%
-  # ggplot(aes(x = t_rel, y = x)) +
-  # geom_point(alpha = .1) +
-  # facet_grid(rows = vars(bottomdist), cols = vars(freq))
+vec_tv_table  %>%
+  filter(str_detect(run, "Contr")) %>%
+  group_by(run) %>%
+  mutate(t_rel = t - min(t),
+         bottomdist = str_extract(run, "Hz.*"),
+         freq = str_extract(run, ".*Hz")) %>%
+  ggplot(aes(x = t_rel, y = x)) +
+  geom_point(alpha = .1) +
+  facet_grid(rows = vars(bottomdist), cols = vars(freq))
