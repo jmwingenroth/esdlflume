@@ -60,18 +60,20 @@ vec_tv_table %>%
              group = paste(density, freq))) +
   geom_path(size = .65) +
   labs(x = "Longitudinal Velocity (m/s)", y = "Height From Bottom (cm)", 
-       color = "Collector Density Treatment", freq = "Pump Frequency (Hz)") +
+       color = "Collector Density Treatment", lty = "Pump Frequency (Hz)") +
   scale_x_continuous(limits = c(0,NA), minor_breaks = NULL) +
   scale_y_continuous(limits = c(0,NA), minor_breaks = NULL, ) +
   theme_bw() +
   geom_point(shape = 4)
+
+ggsave(filename = "vectrino.png", width = 7, height = 4, units = "in")
   
-vec_tv_table  %>%
-  filter(str_detect(run, "Contr")) %>%
-  group_by(run) %>%
-  mutate(t_rel = t - min(t),
-         bottomdist = str_extract(run, "Hz.*"),
-         freq = str_extract(run, ".*Hz")) %>%
-  ggplot(aes(x = t_rel, y = x)) +
-  geom_point(alpha = .1) +
-  facet_grid(rows = vars(bottomdist), cols = vars(freq))
+# vec_tv_table  %>%
+#   filter(str_detect(run, "Contr")) %>%
+#   group_by(run) %>%
+#   mutate(t_rel = t - min(t),
+#          bottomdist = str_extract(run, "Hz.*"),
+#          freq = str_extract(run, ".*Hz")) %>%
+#   ggplot(aes(x = t_rel, y = x)) +
+#   geom_point(alpha = .1) +
+#   facet_grid(rows = vars(bottomdist), cols = vars(freq))
