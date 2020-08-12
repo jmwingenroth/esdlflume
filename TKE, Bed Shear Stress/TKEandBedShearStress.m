@@ -5,7 +5,6 @@ close all
 nbins = 3;
 %nbins = sum(cell2mat(pct_rm)<0.5); %which of the three cell depths have percentage removed greater than 0.5%
 bin_size = 0.001;
-%dist_above_bed = 4.14;
 bin_range = 5:0.1:5.2;
 %bin_range = bin_range(cell2mat(pct_rm)<0.5);
 z = dist_above_bed-bin_range;
